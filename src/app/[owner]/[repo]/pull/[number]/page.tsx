@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { use, useMemo } from "react";
+import { use, useMemo, useState, useCallback } from "react";
 import { api } from "~/trpc/react";
 import AISummaryCard from "~/components/diff/ai-summary-card";
 import FileTreeSidebar from "~/components/diff/file-tree-sidebar";
 import { ThemedCodeView } from "~/components/theming/react/ThemedCodeView";
-import { processPatch, type CodeViewDiffItem } from "@pierre/diffs";
+import { processPatch, type CodeViewDiffItem, type CodeViewItem } from "@pierre/diffs";
 import type { FileChange } from "~/components/diff/types";
+import { Sparkles, Loader2 } from "lucide-react";
 
 function constructPatch(files: FileChange[]): string {
   return files
@@ -37,11 +38,20 @@ export default function PullRequestPage({ params }: Props) {
   const { owner, repo, number } = use(params);
   const prNumber = parseInt(number, 10);
 
-  const { data: pr, isLoading } = api.public.getPullRequest.useQuery({
+  const { data: pr, isLoading, refetch } = api.public.getPullRequest.useQuery({
     owner,
     repo,
     prNumber,
   });
+
+  const regenerateMutation = api.public.regeneratePRSummary.useMutation({
+    onSuccess: () => refetch(),
+  });
+
+  const fileSummaryMutation = api.public.summarizeFileByPR.useMutation();
+
+  const [fileSummaries, setFileSummaries] = useState<Record<string, string>>({});
+  const [summarizingFiles, setSummarizingFiles] = useState<Set<string>>(new Set());
 
   const files = useMemo(
     () => ((pr as unknown as Record<string, unknown>)?.files as FileChange[] | undefined) ?? [],
@@ -64,6 +74,71 @@ export default function PullRequestPage({ params }: Props) {
     }
   }, [files, prNumber]);
 
+  const handleSummarizeFile = useCallback(
+    (fileName: string) => {
+      if (summarizingFiles.has(fileName) || fileSummaries[fileName]) return;
+      setSummarizingFiles((prev) => new Set(prev).add(fileName));
+      fileSummaryMutation.mutate(
+        { owner, repo, prNumber, fileName },
+        {
+          onSuccess: (summary) => {
+            setFileSummaries((prev) => ({ ...prev, [fileName]: summary }));
+            setSummarizingFiles((prev) => {
+              const next = new Set(prev);
+              next.delete(fileName);
+              return next;
+            });
+          },
+          onError: () => {
+            setSummarizingFiles((prev) => {
+              const next = new Set(prev);
+              next.delete(fileName);
+              return next;
+            });
+          },
+        },
+      );
+    },
+    [owner, repo, prNumber, fileSummaryMutation, fileSummaries, summarizingFiles],
+  );
+
+  const renderHeaderMetadata = useCallback(
+    (item: CodeViewItem<unknown>) => {
+      if (item.type !== "diff") return null;
+      const fileName = item.fileDiff.name;
+      const summary = fileSummaries[fileName];
+      const isSummarizing = summarizingFiles.has(fileName);
+
+      return (
+        <div className="flex items-center gap-2">
+          {summary ? (
+            <span className="max-w-96 truncate text-xs text-[var(--muted-foreground)]" title={summary}>
+              {summary}
+            </span>
+          ) : (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                handleSummarizeFile(fileName);
+              }}
+              disabled={isSummarizing}
+              className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium text-[var(--color-primary)] hover:bg-[var(--diffshub-card-hover-bg)] disabled:opacity-50"
+            >
+              {isSummarizing ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Sparkles className="h-3 w-3" />
+              )}
+              Summarize
+            </button>
+          )}
+        </div>
+      );
+    },
+    [fileSummaries, summarizingFiles, handleSummarizeFile],
+  );
+
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-[var(--background)]">
@@ -81,6 +156,7 @@ export default function PullRequestPage({ params }: Props) {
   }
 
   const d = pr as unknown as Record<string, unknown>;
+  const summary = (d.summary as string) ?? null;
 
   return (
     <div className="flex h-screen">
@@ -130,7 +206,12 @@ export default function PullRequestPage({ params }: Props) {
           </div>
         </div>
 
-        <AISummaryCard summary={(d.summary as string) ?? null} label="AI Summary" />
+        <AISummaryCard
+          summary={summary}
+          onGenerate={() => regenerateMutation.mutate({ owner, repo, prNumber })}
+          isGenerating={regenerateMutation.isPending}
+          label="AI Summary"
+        />
 
         <div className="flex-1 overflow-hidden">
           <FileTreeSidebar
@@ -143,7 +224,11 @@ export default function PullRequestPage({ params }: Props) {
 
       <div className="flex min-w-0 flex-1 flex-col bg-[var(--background)]">
         {diffItems.length > 0 ? (
-          <ThemedCodeView initialItems={diffItems} />
+          <ThemedCodeView
+            initialItems={diffItems}
+            options={{ stickyHeaders: true }}
+            renderHeaderMetadata={renderHeaderMetadata}
+          />
         ) : (
           <div className="flex flex-1 items-center justify-center text-sm text-[var(--muted-foreground)]/70">
             No files changed

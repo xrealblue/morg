@@ -97,3 +97,83 @@ ${fileDiffs.slice(0, 5000)}`;
     return "Failed to generate summary.";
   }
 }
+
+function extractPatches(data: Record<string, unknown>): string {
+  const files = data.files as { fileName?: string; patch?: string | null; status?: string }[] | undefined;
+  if (!files) return "";
+  return files
+    .map((f) => `File: ${f.fileName ?? "unknown"} (${f.status ?? "modified"})\n${f.patch ?? ""}`)
+    .filter(Boolean)
+    .join("\n\n");
+}
+
+export async function summarizeCommitCache(
+  owner: string,
+  repo: string,
+  sha: string,
+): Promise<string> {
+  const { getCachedCommit, setCachedCommit } = await import("./cache");
+  const fullName = `${owner}/${repo}`;
+  const cached = await getCachedCommit(fullName, sha);
+  if (!cached) return "Commit not found in cache.";
+
+  const data = cached.data as Record<string, unknown>;
+  const patches = extractPatches(data);
+  if (!patches) return "No diff available.";
+
+  try {
+    const { aiSummarize } = await import("./gemini");
+    const summary = await aiSummarize(patches);
+    await setCachedCommit(fullName, sha, cached.data, summary);
+    return summary;
+  } catch {
+    return "Failed to generate summary.";
+  }
+}
+
+export async function summarizePRCache(
+  owner: string,
+  repo: string,
+  prNumber: number,
+): Promise<string> {
+  const { getCachedPR, setCachedPR } = await import("./cache");
+  const fullName = `${owner}/${repo}`;
+  const cached = await getCachedPR(fullName, prNumber);
+  if (!cached) return "Pull request not found.";
+
+  const data = cached.data as Record<string, unknown>;
+  const patches = extractPatches(data);
+  if (!patches) return "No diff available.";
+
+  const prompt = `Summarize this pull request in 2-4 bullet points. Focus on the overall goal and key changes.
+
+Changes:
+${patches.slice(0, 5000)}`;
+
+  try {
+    const summary = await generateWithFallback(prompt);
+    await setCachedPR(fullName, prNumber, cached.data, summary);
+    return summary;
+  } catch {
+    return "Failed to generate summary.";
+  }
+}
+
+export async function summarizeFileFromCache(
+  owner: string,
+  repo: string,
+  sha: string,
+  fileName: string,
+): Promise<string> {
+  const { getCachedCommit } = await import("./cache");
+  const fullName = `${owner}/${repo}`;
+  const cached = await getCachedCommit(fullName, sha);
+  if (!cached) return "Commit not found.";
+
+  const data = cached.data as Record<string, unknown>;
+  const files = data.files as { fileName?: string; patch?: string | null }[] | undefined;
+  const file = files?.find((f) => f.fileName === fileName);
+  if (!file) return "File not found.";
+
+  return summarizeFileDiff(fileName, file.patch ?? "");
+}

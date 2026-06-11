@@ -1,6 +1,7 @@
 import { db } from "~/server/db";
 import { Octokit } from "octokit";
 import { getCachedPR, setCachedPR } from "./cache";
+import { aiSummarize } from "./gemini";
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
@@ -144,7 +145,17 @@ export async function getPullRequestDetail(
   const detail = await fetchPRFromGitHub(owner, repo, prNumber);
   await setCachedPR(fullName, prNumber, detail);
 
-  return detail;
+  let summary: string | null = null;
+  try {
+    summary = await aiSummarize(
+      detail.files.map((f) => f.patch).filter(Boolean).join("\n"),
+    );
+    await setCachedPR(fullName, prNumber, detail, summary);
+  } catch (e) {
+    console.error("AI summary failed, cached without it:", e);
+  }
+
+  return { ...detail, summary };
 }
 
 export async function syncProjectPullRequests(projectId: string) {

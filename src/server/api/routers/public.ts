@@ -4,7 +4,13 @@ import { getCommitDetail, getCommitWithFiles } from "~/lib/github-commit";
 import { getPullRequestDetail } from "~/lib/github-pr";
 import { getRepoInfo, getRepoOverview } from "~/lib/github-repo";
 import { getRepoFileTree } from "~/lib/github-file-tree";
-import { generatePerFileSummary, summarizePullRequest } from "~/lib/ai-summary";
+import {
+  generatePerFileSummary,
+  summarizePullRequest,
+  summarizeCommitCache,
+  summarizePRCache,
+  summarizeFileFromCache,
+} from "~/lib/ai-summary";
 
 export const publicRouter = createTRPCRouter({
   getRepo: publicProcedure
@@ -47,5 +53,38 @@ export const publicRouter = createTRPCRouter({
     .input(z.object({ pullRequestId: z.string() }))
     .mutation(async ({ input }) => {
       return summarizePullRequest(input.pullRequestId);
+    }),
+
+  regenerateCommitSummary: publicProcedure
+    .input(z.object({ owner: z.string(), repo: z.string(), sha: z.string() }))
+    .mutation(async ({ input }) => {
+      return summarizeCommitCache(input.owner, input.repo, input.sha);
+    }),
+
+  regeneratePRSummary: publicProcedure
+    .input(z.object({ owner: z.string(), repo: z.string(), prNumber: z.number() }))
+    .mutation(async ({ input }) => {
+      return summarizePRCache(input.owner, input.repo, input.prNumber);
+    }),
+
+  summarizeFileByCommit: publicProcedure
+    .input(z.object({ owner: z.string(), repo: z.string(), sha: z.string(), fileName: z.string() }))
+    .mutation(async ({ input }) => {
+      return summarizeFileFromCache(input.owner, input.repo, input.sha, input.fileName);
+    }),
+
+  summarizeFileByPR: publicProcedure
+    .input(z.object({ owner: z.string(), repo: z.string(), prNumber: z.number(), fileName: z.string() }))
+    .mutation(async ({ input }) => {
+      const { getCachedPR } = await import("~/lib/cache");
+      const { summarizeFileDiff } = await import("~/lib/ai-summary");
+      const fullName = `${input.owner}/${input.repo}`;
+      const cached = await getCachedPR(fullName, input.prNumber);
+      if (!cached) return "PR not found.";
+      const data = cached.data as Record<string, unknown>;
+      const files = data.files as { fileName?: string; patch?: string | null }[] | undefined;
+      const file = files?.find((f) => f.fileName === input.fileName);
+      if (!file) return "File not found.";
+      return summarizeFileDiff(input.fileName, file.patch ?? "");
     }),
 });
