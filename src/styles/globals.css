@@ -6,11 +6,11 @@
   --font-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
     Consolas, monospace;
 
-  --color-background: #0a0a0b;
+  --color-background: #000000;
   --color-foreground: #e4e4e7;
-  --color-muted: #18181b;
+  --color-muted: #000000;
   --color-muted-foreground: #a1a1aa;
-  --color-border: #27272a;
+  --color-border: #18181b;
   --color-primary: #fafafa;
   --color-primary-foreground: #18181b;
   --color-accent: #27272a;

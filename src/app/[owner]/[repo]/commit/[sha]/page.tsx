@@ -62,16 +62,16 @@ export default function CommitPage({ params }: Props) {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-zinc-950">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-700 border-t-zinc-300" />
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-foreground" />
       </div>
     );
   }
 
   if (!commit) {
     return (
-      <div className="flex h-screen items-center justify-center bg-zinc-950">
-        <p className="text-zinc-500">Commit not found</p>
+      <div className="flex h-screen items-center justify-center bg-background">
+        <p className="text-muted-foreground">Commit not found</p>
       </div>
     );
   }
@@ -81,8 +81,8 @@ export default function CommitPage({ params }: Props) {
 
   return (
     <div className="flex h-screen">
-      <div className="flex w-80 shrink-0 flex-col border-r border-zinc-800 bg-zinc-950">
-        <div className="border-b border-zinc-800 px-4 py-3">
+      <div className="flex w-80 shrink-0 flex-col border-r border-border bg-background">
+        <div className="border-b border-border px-4 py-3">
           <div className="flex items-center gap-2.5">
             {(d.commitAuthorAvatar as string) && (
               <img
@@ -92,16 +92,16 @@ export default function CommitPage({ params }: Props) {
               />
             )}
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 text-xs text-zinc-400">
-                <span className="font-medium text-zinc-200">{d.commitAuthorName as string}</span>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <span className="font-medium text-foreground">{d.commitAuthorName as string}</span>
               </div>
-              <h1 className="truncate text-sm font-semibold text-zinc-100">
+              <h1 className="truncate text-sm font-semibold text-foreground">
                 {d.commitMessage as string}
               </h1>
             </div>
           </div>
-          <div className="mt-2 flex items-center gap-3 text-xs text-zinc-500">
-            <code className="font-mono text-zinc-400">{(d.commitHash as string)?.slice(0, 7)}</code>
+          <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
+            <code className="font-mono text-muted-foreground">{(d.commitHash as string)?.slice(0, 7)}</code>
             <span className="text-emerald-400">+{(stats.additions as number)}</span>
             <span className="text-red-400">-{(stats.deletions as number)}</span>
             <span>{(stats.total as number) ?? files.length} files</span>
@@ -119,7 +119,7 @@ export default function CommitPage({ params }: Props) {
         </div>
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col bg-zinc-950">
+      <div className="flex min-w-0 flex-1 flex-col bg-background">
         {activeFileData ? (
           <>
             <FileTabBar
@@ -127,11 +127,11 @@ export default function CommitPage({ params }: Props) {
               activeFile={activeFile}
               onFileSelect={handleFileSelect}
             />
-            <div className="flex items-center gap-3 border-b border-zinc-800 px-4 py-1.5 text-xs text-zinc-500">
-              <span className="font-medium text-zinc-300">{activeFileData.fileName}</span>
+            <div className="flex items-center gap-3 border-b border-border px-4 py-1.5 text-xs text-muted-foreground">
+              <span className="font-medium text-foreground">{activeFileData.fileName}</span>
               <span className="text-emerald-400">+{activeFileData.additions}</span>
               <span className="text-red-400">-{activeFileData.deletions}</span>
-              <span className="text-zinc-600">({activeFileData.status})</span>
+              <span className="text-muted-foreground/70">({activeFileData.status})</span>
             </div>
             <div className="min-h-0 flex-1">
               <DiffViewer
@@ -142,7 +142,7 @@ export default function CommitPage({ params }: Props) {
             </div>
           </>
         ) : (
-          <div className="flex flex-1 items-center justify-center text-sm text-zinc-600">
+          <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground/70">
             Select a file to view its diff
           </div>
         )}

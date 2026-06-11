@@ -63,16 +63,16 @@ export default function PullRequestPage({ params }: Props) {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-zinc-950">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-700 border-t-zinc-300" />
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-foreground" />
       </div>
     );
   }
 
   if (!pr) {
     return (
-      <div className="flex h-screen items-center justify-center bg-zinc-950">
-        <p className="text-zinc-500">Pull request not found</p>
+      <div className="flex h-screen items-center justify-center bg-background">
+        <p className="text-muted-foreground">Pull request not found</p>
       </div>
     );
   }
@@ -81,8 +81,8 @@ export default function PullRequestPage({ params }: Props) {
 
   return (
     <div className="flex h-screen">
-      <div className="flex w-80 shrink-0 flex-col border-r border-zinc-800 bg-zinc-950">
-        <div className="border-b border-zinc-800 px-4 py-3">
+      <div className="flex w-80 shrink-0 flex-col border-r border-border bg-background">
+        <div className="border-b border-border px-4 py-3">
           <div className="flex items-center gap-2 mb-1">
             <span
               className={`inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium ${
@@ -95,12 +95,12 @@ export default function PullRequestPage({ params }: Props) {
             >
               {(d.state as string) === "merged" ? "Merged" : (d.state as string)}
             </span>
-            <span className="text-xs text-zinc-500">#{number}</span>
+            <span className="text-xs text-muted-foreground">#{number}</span>
           </div>
-          <h1 className="truncate text-sm font-semibold text-zinc-100">
+          <h1 className="truncate text-sm font-semibold text-foreground">
             {d.title as string}
           </h1>
-          <div className="mt-1 flex items-center gap-2 text-xs text-zinc-500">
+          <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
             {(d.authorAvatar as string) && (
               <Image
                 src={d.authorAvatar as string}
@@ -110,18 +110,18 @@ export default function PullRequestPage({ params }: Props) {
                 className="rounded-full"
               />
             )}
-            <span className="font-medium text-zinc-300">{d.authorName as string}</span>
+            <span className="font-medium text-foreground">{d.authorName as string}</span>
             <span>into</span>
-            <code className="bg-zinc-900 px-1.5 py-0.5 text-[11px] text-zinc-400">
+            <code className="bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground">
               {d.baseBranch as string}
             </code>
             <span>from</span>
-            <code className="bg-zinc-900 px-1.5 py-0.5 text-[11px] text-zinc-400">
+            <code className="bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground">
               {d.headBranch as string}
             </code>
           </div>
-          <div className="mt-2 flex items-center gap-3 text-xs text-zinc-500">
-            <span className="text-zinc-400">{(d.changedFiles as number)} files</span>
+          <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="text-muted-foreground">{(d.changedFiles as number)} files</span>
             <span className="text-emerald-400">+{(d.additions as number)}</span>
             <span className="text-red-400">-{(d.deletions as number)}</span>
           </div>
@@ -138,7 +138,7 @@ export default function PullRequestPage({ params }: Props) {
         </div>
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col bg-zinc-950">
+      <div className="flex min-w-0 flex-1 flex-col bg-background">
         {activeFileData ? (
           <>
             <FileTabBar
@@ -146,11 +146,11 @@ export default function PullRequestPage({ params }: Props) {
               activeFile={activeFile}
               onFileSelect={handleFileSelect}
             />
-            <div className="flex items-center gap-3 border-b border-zinc-800 px-4 py-1.5 text-xs text-zinc-500">
-              <span className="font-medium text-zinc-300">{activeFileData.fileName}</span>
+            <div className="flex items-center gap-3 border-b border-border px-4 py-1.5 text-xs text-muted-foreground">
+              <span className="font-medium text-foreground">{activeFileData.fileName}</span>
               <span className="text-emerald-400">+{activeFileData.additions}</span>
               <span className="text-red-400">-{activeFileData.deletions}</span>
-              <span className="text-zinc-600">({activeFileData.status})</span>
+              <span className="text-muted-foreground/70">({activeFileData.status})</span>
             </div>
             <div className="min-h-0 flex-1">
               <DiffViewer
@@ -161,7 +161,7 @@ export default function PullRequestPage({ params }: Props) {
             </div>
           </>
         ) : (
-          <div className="flex flex-1 items-center justify-center text-sm text-zinc-600">
+          <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground/70">
             Select a file to view its diff
           </div>
         )}

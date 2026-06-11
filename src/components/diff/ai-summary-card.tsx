@@ -19,34 +19,34 @@ export default function AISummaryCard({
   const [expanded, setExpanded] = useState(true);
 
   return (
-    <div className="border-b border-zinc-800">
+    <div className="border-b border-border">
       <button
         onClick={() => setExpanded(!expanded)}
         className="flex w-full items-center justify-between px-4 py-2.5 text-left"
       >
         <div className="flex items-center gap-2">
           <Sparkles className="h-3.5 w-3.5 text-blue-400" />
-          <span className="text-xs font-medium text-zinc-400">{label}</span>
+          <span className="text-xs font-medium text-muted-foreground">{label}</span>
         </div>
         {expanded ? (
-          <ChevronDown className="h-3.5 w-3.5 text-zinc-600" />
+          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/70" />
         ) : (
-          <ChevronRight className="h-3.5 w-3.5 text-zinc-600" />
+          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/70" />
         )}
       </button>
 
       {expanded && (
-        <div className="border-t border-zinc-800 px-4 pb-3 pt-2.5">
+        <div className="border-t border-border px-4 pb-3 pt-2.5">
           {summary ? (
             <div className="space-y-2">
-              <pre className="whitespace-pre-wrap text-xs leading-relaxed text-zinc-400">
+              <pre className="whitespace-pre-wrap text-xs leading-relaxed text-muted-foreground">
                 {summary}
               </pre>
               {onGenerate && (
                 <button
                   onClick={onGenerate}
                   disabled={isGenerating}
-                  className="inline-flex items-center gap-1.5 bg-zinc-800 px-2.5 py-1 text-xs font-medium text-zinc-400 transition hover:bg-zinc-700 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground transition hover:bg-muted disabled:opacity-50"
                 >
                   <RefreshCw
                     className={`h-3 w-3 ${isGenerating ? "animate-spin" : ""}`}
@@ -74,7 +74,7 @@ export default function AISummaryCard({
               )}
             </button>
           ) : (
-            <p className="text-xs text-zinc-600">No summary available.</p>
+            <p className="text-xs text-muted-foreground/70">No summary available.</p>
           )}
         </div>
       )}

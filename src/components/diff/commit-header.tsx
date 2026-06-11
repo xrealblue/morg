@@ -22,7 +22,7 @@ export default function CommitHeader({
   date,
 }: Props) {
   return (
-    <div className="border-b border-zinc-200 bg-white px-6 py-4">
+    <div className="border-b border-border bg-background px-6 py-4">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">
           {authorAvatar && (
@@ -34,29 +34,29 @@ export default function CommitHeader({
           )}
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-zinc-900">{authorName}</span>
-              <span className="text-xs text-zinc-500">
+              <span className="text-sm font-medium text-foreground">{authorName}</span>
+              <span className="text-xs text-muted-foreground">
                 {formatDistanceToNow(new Date(date), { addSuffix: true })}
               </span>
             </div>
-            <h1 className="mt-0.5 text-base font-semibold text-zinc-900">
+            <h1 className="mt-0.5 text-base font-semibold text-foreground">
               {message}
             </h1>
           </div>
         </div>
-        <code className="shrink-0 bg-zinc-100 px-2.5 py-0.5 font-mono text-xs text-zinc-600">
+        <code className="shrink-0 bg-muted px-2.5 py-0.5 font-mono text-xs text-muted-foreground">
           {hash.slice(0, 7)}
         </code>
       </div>
 
       <div className="mt-2 flex items-center gap-4 text-xs">
-        <span className="text-zinc-500">
-          <strong className="text-zinc-700">{totalFiles}</strong> files changed
+        <span className="text-muted-foreground">
+          <strong className="text-foreground">{totalFiles}</strong> files changed
         </span>
-        <span className="text-emerald-600">
+        <span className="text-emerald-400">
           +<strong>{additions}</strong>
         </span>
-        <span className="text-red-600">
+        <span className="text-red-400">
           -<strong>{deletions}</strong>
         </span>
       </div>

@@ -100,20 +100,20 @@ function defineMonokaiNight(m: Monaco) {
     ],
     colors: {
       // Editor core — true Monokai Night background
-      "editor.background": "#040404",
-      "editor.foreground": "#040404",
+      "editor.background": "#000000",
+      "editor.foreground": "#CCCCCC",
       "editorCursor.foreground": "#F8F8F0",
-      "editor.lineHighlightBackground": "#040404",
+      "editor.lineHighlightBackground": "#0a0a0a",
       "editor.selectionBackground": "#49483E",
       "editor.inactiveSelectionBackground": "#3A3A4E",
       "editor.selectionHighlightBackground": "#49483E80",
       "editor.wordHighlightBackground": "#49483E80",
       "editor.wordHighlightStrongBackground": "#49483E99",
       // Line numbers
-      "editorLineNumber.foreground": "#fff",
+      "editorLineNumber.foreground": "#555566",
       "editorLineNumber.activeForeground": "#9999BB",
       // Gutter diff indicators
-      "editorGutter.background": "#040404",
+      "editorGutter.background": "#000000",
       "editorGutter.addedBackground": "#A6E22E88",
       "editorGutter.modifiedBackground": "#66D9EF88",
       "editorGutter.deletedBackground": "#F9267288",
@@ -149,7 +149,7 @@ export default function DiffViewer({ original, modified, language, filePath }: P
 
   if (!original && !modified) {
     return (
-      <div className="flex h-full items-center justify-center text-sm text-zinc-400">
+      <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
         No diff available
       </div>
     );
@@ -157,15 +157,15 @@ export default function DiffViewer({ original, modified, language, filePath }: P
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900 px-4 py-2">
-        {filePath && <span className="text-sm font-medium text-zinc-400">{filePath}</span>}
-        <div className="flex items-center gap-1 bg-zinc-800 p-0.5">
+      <div className="flex items-center justify-between border-b border-border bg-muted px-4 py-2">
+        {filePath && <span className="text-sm font-medium text-muted-foreground">{filePath}</span>}
+        <div className="flex items-center gap-1 bg-muted p-0.5">
           <button
             onClick={() => setViewMode("side-by-side")}
             className={`px-3 py-1 text-xs font-medium transition ${
               viewMode === "side-by-side"
-                ? "bg-zinc-700 text-zinc-100"
-                : "text-zinc-500 hover:text-zinc-300"
+                ? "bg-muted text-foreground"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Side-by-side
@@ -174,8 +174,8 @@ export default function DiffViewer({ original, modified, language, filePath }: P
             onClick={() => setViewMode("unified")}
             className={`px-3 py-1 text-xs font-medium transition ${
               viewMode === "unified"
-                ? "bg-zinc-700 text-zinc-100"
-                : "text-zinc-500 hover:text-zinc-300"
+                ? "bg-muted text-foreground"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Unified
