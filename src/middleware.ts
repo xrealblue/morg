@@ -1,17 +1,33 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const publicRoutes = ["/", "/sign-in", "/sign-up", "/api/auth"];
+const publicRoutes = [
+  "/",
+  "/sign-in",
+  "/sign-up",
+  "/api/auth",
+];
+
+function isPublicRoute(pathname: string): boolean {
+  if (publicRoutes.some((route) => pathname.startsWith(route))) return true;
+
+  const parts = pathname.split("/").filter(Boolean);
+  if (parts.length >= 2) {
+    const [owner, repo] = parts;
+    if (owner && repo && !owner.startsWith("_") && !owner.startsWith("(")) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow public routes and static files
-  const isPublic = publicRoutes.some((route) => pathname.startsWith(route));
-  if (isPublic) {
+  if (isPublicRoute(pathname)) {
     return NextResponse.next();
   }
 
-  // Check for session cookie (better-auth uses "better-auth.session_token")
   const sessionCookie =
     request.cookies.get("better-auth.session_token") ??
     request.cookies.get("__Secure-better-auth.session_token");
