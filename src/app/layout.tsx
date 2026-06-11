@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
+import localFont from "next/font/local";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "sonner";
 
@@ -18,11 +19,17 @@ const geist = Geist({
   variable: "--font-geist-sans",
 });
 
+const berkeleyMono = localFont({
+  src: "../../public/fonts/BerkeleyMono-Regular.otf",
+  variable: "--font-mono",
+  display: "swap",
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable}`}>
+    <html lang="en" className={`${geist.variable} ${berkeleyMono.variable}`}>
       <body>
         <TRPCReactProvider>
           <ProjectProvider>{children}</ProjectProvider>

@@ -54,16 +54,16 @@ export default function FileTreeSidebar({ files, activeFile, onFileSelect }: Pro
   const rootFiles = grouped["/"] ?? [];
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white">
-      <div className="border-b border-zinc-100 px-4 py-3">
+    <div className="flex h-full flex-col bg-white">
+      <div className="border-b border-zinc-200 px-4 py-3">
         <h3 className="text-sm font-semibold text-zinc-700">
-          Changed Files
+          Files
           <span className="ml-2 text-xs font-normal text-zinc-400">
             ({files.length})
           </span>
         </h3>
       </div>
-      <div className="max-h-[600px] overflow-y-auto p-2">
+      <div className="flex-1 overflow-y-auto p-2">
         {dirs.map((dir) => (
           <div key={dir} className="mb-1">
             <div className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium text-zinc-500">

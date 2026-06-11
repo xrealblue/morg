@@ -22,34 +22,34 @@ export default function CommitHeader({
   date,
 }: Props) {
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-6">
+    <div className="border-b border-zinc-200 bg-white px-6 py-4">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">
           {authorAvatar && (
             <img
               src={authorAvatar}
               alt={authorName}
-              className="h-10 w-10 rounded-full"
+              className="h-8 w-8 rounded-full"
             />
           )}
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-medium text-zinc-900">{authorName}</span>
-              <span className="text-sm text-zinc-500">
+              <span className="text-sm font-medium text-zinc-900">{authorName}</span>
+              <span className="text-xs text-zinc-500">
                 {formatDistanceToNow(new Date(date), { addSuffix: true })}
               </span>
             </div>
-            <h1 className="mt-1 text-lg font-semibold text-zinc-900">
+            <h1 className="mt-0.5 text-base font-semibold text-zinc-900">
               {message}
             </h1>
           </div>
         </div>
-        <code className="shrink-0 rounded-md bg-zinc-100 px-3 py-1 font-mono text-sm text-zinc-600">
+        <code className="shrink-0 bg-zinc-100 px-2.5 py-0.5 font-mono text-xs text-zinc-600">
           {hash.slice(0, 7)}
         </code>
       </div>
 
-      <div className="mt-4 flex items-center gap-4 text-sm">
+      <div className="mt-2 flex items-center gap-4 text-xs">
         <span className="text-zinc-500">
           <strong className="text-zinc-700">{totalFiles}</strong> files changed
         </span>

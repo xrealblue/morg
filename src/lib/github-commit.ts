@@ -130,11 +130,16 @@ export async function getCommitDetail(owner: string, repo: string, sha: string) 
 
   const detail = await fetchCommitFromGitHub(owner, repo, sha);
 
-  const summary = await aiSummarize(
-    detail.files.map((f) => f.patch).filter(Boolean).join("\n"),
-  );
+  let summary: string | null = null;
+  try {
+    summary = await aiSummarize(
+      detail.files.map((f) => f.patch).filter(Boolean).join("\n"),
+    );
+  } catch (e) {
+    console.error("AI summary failed, caching without it:", e);
+  }
 
-  await setCachedCommit(fullName, sha, detail, summary);
+  await setCachedCommit(fullName, sha, detail, summary ?? undefined);
 
   return { ...detail, summary };
 }

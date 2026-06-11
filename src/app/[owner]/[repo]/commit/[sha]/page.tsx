@@ -62,20 +62,16 @@ export default function CommitPage({ params }: Props) {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-8">
-        <div className="flex items-center justify-center py-20">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-900" />
-        </div>
+      <div className="flex h-[calc(100vh-48px)] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-900" />
       </div>
     );
   }
 
   if (!commit) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-8">
-        <div className="rounded-2xl border border-zinc-200 bg-white p-12 text-center">
-          <p className="text-zinc-500">Commit not found</p>
-        </div>
+      <div className="flex h-[calc(100vh-48px)] items-center justify-center">
+        <p className="text-zinc-500">Commit not found</p>
       </div>
     );
   }
@@ -84,62 +80,56 @@ export default function CommitPage({ params }: Props) {
   const stats = (d.stats ?? {}) as Record<string, number>;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      <div className="mb-4">
-        <a href={`/${owner}/${repo}`} className="text-sm text-zinc-400 hover:text-zinc-600">
-          ← {owner}/{repo}
-        </a>
-      </div>
+    <div className="flex h-[calc(100vh-48px)] flex-col">
+      <CommitHeader
+        authorName={(d.authorName as string) ?? ""}
+        authorAvatar={(d.authorAvatar as string) ?? ""}
+        hash={(d.commitHash as string) ?? sha}
+        message={(d.commitMessage as string) ?? ""}
+        totalFiles={(stats.total as number) ?? files.length}
+        additions={(stats.additions as number) ?? 0}
+        deletions={(stats.deletions as number) ?? 0}
+        date={(d.commitDate as string) ?? ""}
+      />
 
-      <div className="space-y-4">
-        <CommitHeader
-          authorName={(d.authorName as string) ?? ""}
-          authorAvatar={(d.authorAvatar as string) ?? ""}
-          hash={(d.commitHash as string) ?? sha}
-          message={(d.commitMessage as string) ?? ""}
-          totalFiles={(stats.total as number) ?? files.length}
-          additions={(stats.additions as number) ?? 0}
-          deletions={(stats.deletions as number) ?? 0}
-          date={(d.commitDate as string) ?? ""}
-        />
+      <AISummaryCard summary={(d.summary as string) ?? null} />
 
-        <AISummaryCard summary={(d.summary as string) ?? null} />
+      <div className="flex min-h-0 flex-1 border-t border-zinc-200">
+        <div className="w-80 shrink-0 border-r border-zinc-200">
+          <FileTreeSidebar
+            files={files}
+            activeFile={activeFile}
+            onFileSelect={handleFileSelect}
+          />
+        </div>
 
-        <div className="flex gap-4">
-          <div className="w-72 shrink-0">
-            <FileTreeSidebar
-              files={files}
-              activeFile={activeFile}
-              onFileSelect={handleFileSelect}
-            />
-          </div>
-
-          <div className="min-w-0 flex-1 space-y-2">
-            {activeFileData ? (
-              <>
-                <FileTabBar
-                  files={files}
-                  activeFile={activeFile}
-                  onFileSelect={handleFileSelect}
-                />
-                <div className="rounded-xl border border-zinc-200 bg-white p-3 text-xs text-zinc-500">
-                  <span className="font-medium text-zinc-700">{activeFileData.fileName}</span>
-                  <span className="ml-3 text-emerald-600">+{activeFileData.additions}</span>
-                  <span className="ml-1 text-red-600">-{activeFileData.deletions}</span>
-                  <span className="ml-2 text-zinc-400">({activeFileData.status})</span>
-                </div>
+        <div className="flex min-w-0 flex-1 flex-col">
+          {activeFileData ? (
+            <>
+              <FileTabBar
+                files={files}
+                activeFile={activeFile}
+                onFileSelect={handleFileSelect}
+              />
+              <div className="flex items-center gap-3 border-b border-zinc-200 px-4 py-1.5 text-xs text-zinc-500">
+                <span className="font-medium text-zinc-700">{activeFileData.fileName}</span>
+                <span className="text-emerald-600">+{activeFileData.additions}</span>
+                <span className="text-red-600">-{activeFileData.deletions}</span>
+                <span className="text-zinc-400">({activeFileData.status})</span>
+              </div>
+              <div className="min-h-0 flex-1">
                 <DiffViewer
                   original={parsedDiff.original}
                   modified={parsedDiff.modified}
                   filePath={activeFileData.fileName}
                 />
-              </>
-            ) : (
-              <div className="flex items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 py-20 text-sm text-zinc-400">
-                Select a file from the sidebar to view its diff
               </div>
-            )}
-          </div>
+            </>
+          ) : (
+            <div className="flex flex-1 items-center justify-center text-sm text-zinc-400">
+              Select a file to view its diff
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -55,14 +55,14 @@ export default function DiffViewer({ original, modified, language, filePath }: P
 
   if (!original && !modified) {
     return (
-      <div className="flex items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 py-20 text-sm text-zinc-400">
+      <div className="flex h-full items-center justify-center text-sm text-zinc-400">
         No diff available
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-zinc-200">
+    <div className="flex h-full flex-col">
       <div className="flex items-center justify-between border-b border-zinc-200 bg-zinc-50 px-4 py-2">
         {filePath && (
           <span className="text-sm font-medium text-zinc-700">{filePath}</span>
@@ -91,7 +91,7 @@ export default function DiffViewer({ original, modified, language, filePath }: P
         </div>
       </div>
 
-      <div className={viewMode === "unified" ? "[&_.monaco-editor]:!flex [&_.monaco-editor_.margin]:!hidden" : ""}>
+      <div className="flex min-h-0 flex-1">
         <MonacoDiffEditor
           original={original}
           modified={modified}
@@ -109,8 +109,9 @@ export default function DiffViewer({ original, modified, language, filePath }: P
             tabSize: 2,
             folding: false,
             renderOverviewRuler: false,
+            fontFamily: "Berkeley Mono, ui-monospace, monospace",
+            fontLigatures: true,
           }}
-          height="500px"
         />
       </div>
     </div>

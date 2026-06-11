@@ -30,9 +30,9 @@ export default function FileTabBar({ files, activeFile, onFileSelect, onFileClos
         <button
           key={file.fileName}
           onClick={() => onFileSelect(file.fileName)}
-          className={`flex items-center gap-1.5 border-r border-zinc-200 px-3 py-2 text-xs transition ${
+          className={`flex items-center gap-1.5 border-r border-zinc-200 px-3 py-1.5 text-xs transition ${
             activeFile === file.fileName
-              ? `bg-white text-zinc-900 border-l-2 ${getStatusColor(file.status)}`
+              ? `bg-white text-zinc-900 shadow-[inset_0_-1px_0_0_#fff]`
               : "text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700"
           }`}
         >
@@ -45,7 +45,7 @@ export default function FileTabBar({ files, activeFile, onFileSelect, onFileClos
                 e.stopPropagation();
                 onFileClose(file.fileName);
               }}
-              className="ml-1 rounded p-0.5 hover:bg-zinc-200"
+              className="ml-1 p-0.5 hover:bg-zinc-200"
             >
               <X className="h-3 w-3" />
             </span>

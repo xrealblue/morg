@@ -2,7 +2,31 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { db } from "~/server/db";
 
 const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
-const model = genai.getGenerativeModel({ model: "gemini-3.5-flash" });
+
+const FALLBACK_MODELS = [
+  "gemini-3.5-flash",
+  "gemini-2.0-flash",
+  "gemini-1.5-flash",
+];
+
+async function generateWithFallback(prompt: string): Promise<string> {
+  let lastError: unknown;
+  for (const modelName of FALLBACK_MODELS) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const model = genai.getGenerativeModel({ model: modelName });
+        const response = await model.generateContent(prompt);
+        return response.response.text();
+      } catch (e) {
+        lastError = e;
+        if (attempt < 2) {
+          await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, attempt)));
+        }
+      }
+    }
+  }
+  throw lastError;
+}
 
 export async function summarizeFileDiff(
   fileName: string,
@@ -16,8 +40,7 @@ Diff:
 ${patch.slice(0, 3000)}`;
 
   try {
-    const response = await model.generateContent(prompt);
-    return response.response.text();
+    return await generateWithFallback(prompt);
   } catch {
     return "Failed to generate summary.";
   }
@@ -62,8 +85,7 @@ Changes:
 ${fileDiffs.slice(0, 5000)}`;
 
   try {
-    const response = await model.generateContent(prompt);
-    const summary = response.response.text();
+    const summary = await generateWithFallback(prompt);
 
     await db.pullRequest.update({
       where: { id: prId },
