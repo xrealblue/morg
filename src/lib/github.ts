@@ -1,6 +1,7 @@
 import { db } from "~/server/db";
 import { Octokit } from "octokit";
 import { aiSummarize } from "./gemini";
+import { fetchCommitFromGitHub, storeCommitDiff } from "./github-commit";
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
@@ -65,48 +66,43 @@ export async function pollCommits(projectId: string, page = 1) {
     throw new Error("Project GitHub URL not found");
   }
 
+  const { owner, repo } = parseGithubUrl(project.githubUrl);
   const commitHashes = await getCommits(project.githubUrl, page);
   const unprocessed = await filterUnprocessedCommits(projectId, commitHashes);
 
   if (unprocessed.length === 0) return;
 
-  const summaryResults = await Promise.allSettled(
-    unprocessed.map((commit) =>
-      summarizeCommit(project.githubUrl, commit.commitHash),
-    ),
-  );
+  for (const commit of unprocessed) {
+    try {
+      const detail = await fetchCommitFromGitHub(owner, repo, commit.commitHash);
 
-  const summaries = summaryResults.map((result) =>
-    result.status === "fulfilled" ? result.value : "No summary available",
-  );
+      const diff = await fetch(`${project.githubUrl}/commit/${commit.commitHash}.diff`, {
+        headers: { Accept: "application/vnd.github.v3.diff" },
+      });
+      const diffText = diff.ok ? await diff.text() : "";
+      const summary = (await aiSummarize(diffText)) ?? "No summary available";
 
-  return db.commit.createMany({
-    data: summaries.map((summary, index) => ({
-      projectId,
-      commitHash: unprocessed[index]!.commitHash,
-      commitMessage: unprocessed[index]!.commitMessage,
-      commitAuthorName: unprocessed[index]!.commitAuthorName,
-      commitAuthorAvatar: unprocessed[index]!.commitAuthorAvatar,
-      commitDate: new Date(unprocessed[index]!.commitDate),
-      summary,
-    })),
-  });
-}
+      await storeCommitDiff(projectId, commit.commitHash, {
+        ...detail,
+        commitMessage: commit.commitMessage,
+        commitAuthorName: commit.commitAuthorName,
+        commitAuthorAvatar: commit.commitAuthorAvatar,
+        commitDate: commit.commitDate,
+      });
 
-async function summarizeCommit(
-  githubUrl: string,
-  commitHash: string,
-): Promise<string> {
-  const response = await fetch(`${githubUrl}/commit/${commitHash}.diff`, {
-    headers: { Accept: "application/vnd.github.v3.diff" },
-  });
-
-  if (!response.ok) {
-    return "Failed to fetch diff";
+      const dbCommit = await db.commit.findFirst({
+        where: { projectId, commitHash: commit.commitHash },
+      });
+      if (dbCommit) {
+        await db.commit.update({
+          where: { id: dbCommit.id },
+          data: { summary },
+        });
+      }
+    } catch (err) {
+      console.error(`Failed to process commit ${commit.commitHash}:`, err);
+    }
   }
-
-  const diff = await response.text();
-  return (await aiSummarize(diff)) ?? "No summary available";
 }
 
 async function filterUnprocessedCommits(
