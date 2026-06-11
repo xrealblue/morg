@@ -2,17 +2,12 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useCallback, useEffect } from "react";
-import { Search, Moon, Sun, Github } from "lucide-react";
+import { useState, useCallback } from "react";
+import { Search, Github } from "lucide-react";
 
 export default function RepoLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [repoUrl, setRepoUrl] = useState("");
-  const [dark, setDark] = useState(true);
-
-  useEffect(() => {
-    document.documentElement.classList.add("dark");
-  }, []);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -26,53 +21,33 @@ export default function RepoLayout({ children }: { children: React.ReactNode }) 
     [repoUrl, router],
   );
 
-  const toggleTheme = useCallback(() => {
-    setDark((prev) => {
-      const next = !prev;
-      if (next) {
-        document.documentElement.classList.remove("light");
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-        document.documentElement.classList.add("light");
-      }
-      return next;
-    });
-  }, []);
-
   return (
     <div>
-      <header className="sticky top-0 z-10 border-b border-border bg-background">
+      <header className="sticky top-0 z-10 border-b border-[var(--color-border)] bg-[var(--diffshub-sidebar-bg)]">
         <div className="flex h-12 items-center justify-between px-4">
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-sm font-bold text-foreground">
+            <Link href="/" className="text-sm font-bold text-[var(--foreground)]">
               Morg
             </Link>
             <form onSubmit={handleSubmit} className="flex items-center">
-              <div className="flex items-center border border-border bg-muted px-2.5 py-1 text-xs">
-                <Search className="h-3.5 w-3.5 text-muted-foreground" />
+              <div className="flex items-center border border-[var(--color-border)] bg-[var(--muted)] px-2.5 py-1 text-xs">
+                <Search className="h-3.5 w-3.5 text-[var(--muted-foreground)]" />
                 <input
                   type="text"
                   value={repoUrl}
                   onChange={(e) => setRepoUrl(e.target.value)}
                   placeholder="owner/repo"
-                  className="ml-1.5 w-48 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground/70"
+                  className="ml-1.5 w-48 bg-transparent text-xs text-[var(--foreground)] outline-none placeholder:text-[var(--muted-foreground)]/70"
                 />
               </div>
             </form>
           </div>
           <nav className="flex items-center gap-2">
-            <button
-              onClick={toggleTheme}
-              className="flex h-7 w-7 items-center justify-center text-muted-foreground hover:text-foreground"
-            >
-              {dark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-            </button>
             <a
               href="https://github.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-7 w-7 items-center justify-center text-muted-foreground hover:text-foreground"
+              className="flex h-7 w-7 items-center justify-center text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
             >
               <Github className="h-3.5 w-3.5" />
             </a>
