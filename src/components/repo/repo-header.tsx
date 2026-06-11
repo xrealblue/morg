@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Github, Star, GitFork } from "lucide-react";
 
 interface Props {
@@ -26,10 +27,12 @@ export default function RepoHeader({
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           {ownerAvatar && (
-            <img
+            <Image
               src={ownerAvatar}
-              alt={fullName.split("/")[0]}
-              className="h-10 w-10 rounded-full"
+              alt={fullName.split("/")[0] ?? ""}
+              width={40}
+              height={40}
+              className="rounded-full"
             />
           )}
           <div>
