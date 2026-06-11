@@ -34,8 +34,9 @@ export default function FileTreeSidebar({ files, activeFile, onFileSelect }: Pro
     gitStatus,
     initialSelectedPaths: activeFile ? [activeFile] : undefined,
     onSelectionChange: (selected) => {
-      if (selected.length > 0) {
-        onFileSelect(selected[selected.length - 1]);
+      const last = selected[selected.length - 1];
+      if (last != null) {
+        onFileSelect(last);
       }
     },
   });
