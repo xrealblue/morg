@@ -1,10 +1,11 @@
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import { createCaller } from "~/server/api/root";
+import { createTRPCContext } from "~/server/api/trpc";
 import RepoHeader from "~/components/repo/repo-header";
 import CommitList from "~/components/repo/commit-list";
 import PRList from "~/components/repo/pr-list";
-import { createCaller } from "~/server/api/root";
-import { createTRPCContext } from "~/server/api/trpc";
-import { headers } from "next/headers";
 
 interface Props {
   params: Promise<{ owner: string; repo: string }>;
@@ -32,25 +33,54 @@ export default async function RepoLandingPage({ params }: Props) {
           ownerAvatar={overview.repo.ownerAvatar}
         />
 
-        <div className="rounded-2xl border border-zinc-200 bg-white">
-          <div className="border-b border-zinc-100">
-            <div className="flex">
-              <div className="border-b-2 border-zinc-900 px-6 py-3 text-sm font-medium text-zinc-900">
-                Commits
-              </div>
-              <div className="px-6 py-3 text-sm font-medium text-zinc-400">
-                Pull Requests
-              </div>
-            </div>
-          </div>
-          <div className="p-4">
-            <CommitList
-              commits={overview.commits}
-              owner={owner}
-              repo={repo}
-            />
-          </div>
+        <div className="flex items-center gap-2 border-b border-zinc-200">
+          <Link
+            href={`/${owner}/${repo}`}
+            className="border-b-2 border-zinc-900 px-6 py-3 text-sm font-medium text-zinc-900"
+          >
+            Commits
+          </Link>
+          <Link
+            href={`/${owner}/${repo}/pulls`}
+            className="px-6 py-3 text-sm font-medium text-zinc-400 transition hover:text-zinc-700"
+          >
+            Pull Requests
+          </Link>
+          <Link
+            href={`/${owner}/${repo}/tree/${overview.repo.defaultBranch}`}
+            className="px-6 py-3 text-sm font-medium text-zinc-400 transition hover:text-zinc-700"
+          >
+            Files
+          </Link>
         </div>
+
+        <div>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-zinc-900">Recent Commits</h2>
+            <Link
+              href={`/${owner}/${repo}/commits`}
+              className="text-sm text-zinc-400 hover:text-zinc-600"
+            >
+              View all →
+            </Link>
+          </div>
+          <CommitList commits={overview.commits} owner={owner} repo={repo} />
+        </div>
+
+        {overview.pullRequests.length > 0 && (
+          <div>
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-zinc-900">Recent Pull Requests</h2>
+              <Link
+                href={`/${owner}/${repo}/pulls`}
+                className="text-sm text-zinc-400 hover:text-zinc-600"
+              >
+                View all →
+              </Link>
+            </div>
+            <PRList pullRequests={overview.pullRequests.slice(0, 5)} owner={owner} repo={repo} />
+          </div>
+        )}
       </div>
     );
   } catch {
