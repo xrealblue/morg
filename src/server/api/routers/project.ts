@@ -5,6 +5,9 @@ import {
 } from "~/server/api/trpc";
 import { pollCommits } from "~/lib/github";
 import { indexGithubRepo } from "~/lib/github-loader";
+import { getCommitWithFiles } from "~/lib/github-commit";
+import { syncProjectPullRequests } from "~/lib/github-pr";
+import { generatePerFileSummary } from "~/lib/ai-summary";
 
 export const projectRouter = createTRPCRouter({
   createProject: protectedProcedure
@@ -34,7 +37,6 @@ export const projectRouter = createTRPCRouter({
         },
       });
 
-      // Background: poll commits and index repo
       void pollCommits(project.id).catch(console.error);
       void indexGithubRepo(
         project.id,
@@ -60,13 +62,18 @@ export const projectRouter = createTRPCRouter({
   getCommits: protectedProcedure
     .input(z.object({ projectId: z.string() }))
     .query(async ({ ctx, input }) => {
-      // Trigger background poll for new commits
       void pollCommits(input.projectId).catch(console.error);
 
       return ctx.db.commit.findMany({
         where: { projectId: input.projectId },
         orderBy: { commitDate: "desc" },
       });
+    }),
+
+  getCommitDetail: protectedProcedure
+    .input(z.object({ commitId: z.string() }))
+    .query(async ({ input }) => {
+      return getCommitWithFiles(input.commitId);
     }),
 
   loadMoreCommits: protectedProcedure
@@ -82,5 +89,35 @@ export const projectRouter = createTRPCRouter({
         where: { projectId: input.projectId },
         orderBy: { commitDate: "desc" },
       });
+    }),
+
+  getPullRequests: protectedProcedure
+    .input(z.object({ projectId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.db.pullRequest.findMany({
+        where: { projectId: input.projectId },
+        orderBy: { createdAt: "desc" },
+      });
+    }),
+
+  getPullRequestDetail: protectedProcedure
+    .input(z.object({ pullRequestId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.db.pullRequest.findUnique({
+        where: { id: input.pullRequestId },
+        include: { files: { orderBy: { fileName: "asc" } } },
+      });
+    }),
+
+  syncPullRequests: protectedProcedure
+    .input(z.object({ projectId: z.string() }))
+    .mutation(async ({ input }) => {
+      await syncProjectPullRequests(input.projectId);
+    }),
+
+  summarizeFile: protectedProcedure
+    .input(z.object({ commitFileId: z.string() }))
+    .mutation(async ({ input }) => {
+      return generatePerFileSummary(input.commitFileId);
     }),
 });
