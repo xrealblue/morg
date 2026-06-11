@@ -11,7 +11,7 @@ import {
   LogOut,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import useProject from "~/hooks/use-project";
 import { signOut } from "~/lib/auth-client";
@@ -25,6 +25,7 @@ const navItems = [
 
 export default function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { projects, projectId, setProjectId } = useProject();
 
@@ -84,7 +85,10 @@ export default function AppSidebar() {
             {projects?.map((project) => (
               <button
                 key={project.id}
-                onClick={() => setProjectId(project.id)}
+                onClick={() => {
+                  setProjectId(project.id);
+                  router.push("/dashboard");
+                }}
                 className={cn(
                   "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-zinc-600 transition-colors hover:bg-zinc-100",
                   project.id === projectId && "bg-zinc-100 font-medium text-zinc-900",

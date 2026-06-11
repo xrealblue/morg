@@ -37,7 +37,7 @@ export async function askQuestion(question: string, projectId: string) {
 
   void (async () => {
     const { textStream } = await streamText({
-      model: google("gemini-2.0-flash"),
+      model: google("gemini-3.5-flash"),
       prompt: `You are an AI code assistant who answers questions about the codebase.
 Your target audience is a technical developer looking to understand the codebase.
 Be concise, accurate, and helpful. If the question asks about code or a specific file,

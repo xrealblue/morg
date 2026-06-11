@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { Document } from "@langchain/core/documents";
 
 const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
-const model = genai.getGenerativeModel({ model: "gemini-2.0-flash" });
+const model = genai.getGenerativeModel({ model: "gemini-3.5-flash" });
 
 export async function aiSummarize(diff: string): Promise<string> {
   const prompt = `You are an expert programmer summarizing a git diff.
