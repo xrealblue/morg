@@ -33,22 +33,22 @@ export default async function RepoLandingPage({ params }: Props) {
           ownerAvatar={overview.repo.ownerAvatar}
         />
 
-        <div className="flex items-center gap-2 border-b border-zinc-200">
+        <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-800">
           <Link
             href={`/${owner}/${repo}`}
-            className="border-b-2 border-zinc-900 px-6 py-3 text-sm font-medium text-zinc-900"
+            className="border-b-2 border-zinc-900 dark:border-zinc-100 px-6 py-3 text-sm font-medium text-zinc-900 dark:text-zinc-100"
           >
             Commits
           </Link>
           <Link
             href={`/${owner}/${repo}/pulls`}
-            className="px-6 py-3 text-sm font-medium text-zinc-400 transition hover:text-zinc-700"
+            className="px-6 py-3 text-sm font-medium text-zinc-400 dark:text-zinc-500 transition hover:text-zinc-700 dark:hover:text-zinc-300"
           >
             Pull Requests
           </Link>
           <Link
             href={`/${owner}/${repo}/tree/${overview.repo.defaultBranch}`}
-            className="px-6 py-3 text-sm font-medium text-zinc-400 transition hover:text-zinc-700"
+            className="px-6 py-3 text-sm font-medium text-zinc-400 dark:text-zinc-500 transition hover:text-zinc-700 dark:hover:text-zinc-300"
           >
             Files
           </Link>
@@ -56,10 +56,10 @@ export default async function RepoLandingPage({ params }: Props) {
 
         <div>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-zinc-900">Recent Commits</h2>
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Recent Commits</h2>
             <Link
               href={`/${owner}/${repo}/commits`}
-              className="text-sm text-zinc-400 hover:text-zinc-600"
+              className="text-sm text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"
             >
               View all →
             </Link>
@@ -70,10 +70,10 @@ export default async function RepoLandingPage({ params }: Props) {
         {overview.pullRequests.length > 0 && (
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-zinc-900">Recent Pull Requests</h2>
+              <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Recent Pull Requests</h2>
               <Link
                 href={`/${owner}/${repo}/pulls`}
-                className="text-sm text-zinc-400 hover:text-zinc-600"
+                className="text-sm text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"
               >
                 View all →
               </Link>

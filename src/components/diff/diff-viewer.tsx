@@ -96,7 +96,7 @@ export default function DiffViewer({ original, modified, language, filePath }: P
           original={original}
           modified={modified}
           language={lang}
-          theme="vs"
+          theme="vs-dark"
           options={{
             readOnly: true,
             renderSideBySide: viewMode === "side-by-side",

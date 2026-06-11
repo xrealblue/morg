@@ -32,7 +32,7 @@ export default function CommitList({ commits, owner, repo }: Props) {
         <Link
           key={commit.sha}
           href={`/${owner}/${repo}/commit/${commit.sha}`}
-          className="flex items-center gap-3 rounded-xl border border-zinc-100 bg-white p-4 transition hover:bg-zinc-50 hover:shadow-sm"
+          className="flex items-center gap-3 border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 transition hover:bg-zinc-50 dark:hover:bg-zinc-900"
         >
           {commit.authorAvatar ? (
             <Image
@@ -43,16 +43,16 @@ export default function CommitList({ commits, owner, repo }: Props) {
               className="shrink-0 rounded-full"
             />
           ) : (
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-100">
-              <GitCommit className="h-4 w-4 text-zinc-400" />
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
+              <GitCommit className="h-4 w-4 text-zinc-400 dark:text-zinc-500" />
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-zinc-800">
+            <p className="truncate text-sm font-medium text-zinc-800 dark:text-zinc-200">
               {commit.message}
             </p>
-            <div className="mt-0.5 flex items-center gap-2 text-xs text-zinc-400">
-              <span className="text-zinc-500">{commit.authorName}</span>
+            <div className="mt-0.5 flex items-center gap-2 text-xs text-zinc-400 dark:text-zinc-500">
+              <span className="text-zinc-500 dark:text-zinc-400">{commit.authorName}</span>
               <span>•</span>
               <span>
                 {formatDistanceToNow(new Date(commit.date), {
@@ -61,7 +61,7 @@ export default function CommitList({ commits, owner, repo }: Props) {
               </span>
             </div>
           </div>
-          <code className="shrink-0 font-mono text-xs text-zinc-400">
+          <code className="shrink-0 font-mono text-xs text-zinc-400 dark:text-zinc-500">
             {commit.sha.slice(0, 7)}
           </code>
         </Link>

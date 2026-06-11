@@ -29,7 +29,13 @@ export default function RepoLayout({ children }: { children: React.ReactNode }) 
   const toggleTheme = useCallback(() => {
     setDark((prev) => {
       const next = !prev;
-      document.documentElement.classList.toggle("dark", next);
+      if (next) {
+        document.documentElement.classList.remove("light");
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+        document.documentElement.classList.add("light");
+      }
       return next;
     });
   }, []);

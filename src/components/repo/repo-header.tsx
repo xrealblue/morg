@@ -23,7 +23,7 @@ export default function RepoHeader({
   ownerAvatar,
 }: Props) {
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-6">
+    <div className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           {ownerAvatar && (
@@ -37,17 +37,17 @@ export default function RepoHeader({
           )}
           <div>
             <div className="flex items-center gap-2">
-              <Github className="h-5 w-5 text-zinc-500" />
-              <h1 className="text-xl font-bold text-zinc-900">{fullName}</h1>
+              <Github className="h-5 w-5 text-zinc-500 dark:text-zinc-400" />
+              <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">{fullName}</h1>
             </div>
             {description && (
-              <p className="mt-1 text-sm text-zinc-500">{description}</p>
+              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{description}</p>
             )}
           </div>
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-zinc-500">
+      <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-zinc-500 dark:text-zinc-400">
         {language && (
           <span className="flex items-center gap-1.5">
             <span className="h-3 w-3 rounded-full bg-blue-400" />
@@ -62,8 +62,8 @@ export default function RepoHeader({
           <GitFork className="h-4 w-4" />
           {forks.toLocaleString()}
         </span>
-        <span className="text-zinc-400">
-          <strong className="text-zinc-600">{defaultBranch}</strong> branch
+        <span className="text-zinc-400 dark:text-zinc-500">
+          <strong className="text-zinc-600 dark:text-zinc-400">{defaultBranch}</strong> branch
         </span>
       </div>
     </div>

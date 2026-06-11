@@ -5,6 +5,15 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 });
 
+const overviewCache = new Map<string, { data: Overview; expiry: number }>();
+const OVERVIEW_TTL = 1000 * 60 * 2;
+
+interface Overview {
+  repo: RepoInfo;
+  commits: Array<{ sha: string; message: string; authorName: string; authorAvatar: string; date: string }>;
+  pullRequests: Array<{ number: number; title: string; state: string; authorName: string; authorAvatar: string; createdAt: string }>;
+}
+
 interface RepoInfo {
   name: string;
   fullName: string;

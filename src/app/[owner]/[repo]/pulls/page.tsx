@@ -22,11 +22,11 @@ export default async function PullsPage({ params }: Props) {
         <div>
           <a
             href={`/${owner}/${repo}`}
-            className="text-sm text-zinc-400 hover:text-zinc-600"
+            className="text-sm text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"
           >
             ← {owner}/{repo}
           </a>
-          <h1 className="mt-2 text-2xl font-bold text-zinc-900">
+          <h1 className="mt-2 text-2xl font-bold text-zinc-900 dark:text-zinc-100">
             Pull Requests
           </h1>
         </div>
