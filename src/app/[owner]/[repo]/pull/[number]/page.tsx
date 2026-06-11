@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { use, useState, useCallback, useMemo } from "react";
 import { api } from "~/trpc/react";
 import AISummaryCard from "~/components/diff/ai-summary-card";
@@ -41,7 +42,10 @@ export default function PullRequestPage({ params }: Props) {
     prNumber,
   });
 
-  const files = ((pr as unknown as Record<string, unknown>)?.files as FileChange[] | undefined) ?? [];
+  const files = useMemo(
+    () => ((pr as unknown as Record<string, unknown>)?.files as FileChange[] | undefined) ?? [],
+    [pr],
+  );
 
   const activeFileData = useMemo(
     () => files.find((f) => f.fileName === activeFile),
@@ -110,10 +114,12 @@ export default function PullRequestPage({ params }: Props) {
               </h1>
               <div className="mt-2 flex items-center gap-3 text-sm text-zinc-500">
                 {(d.authorAvatar as string) && (
-                  <img
+                  <Image
                     src={d.authorAvatar as string}
                     alt={d.authorName as string}
-                    className="h-6 w-6 rounded-full"
+                    width={24}
+                    height={24}
+                    className="rounded-full"
                   />
                 )}
                 <span className="font-medium text-zinc-700">{d.authorName as string}</span>

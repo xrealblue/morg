@@ -41,7 +41,10 @@ export default function CommitPage({ params }: Props) {
     sha,
   });
 
-  const files = ((commit as unknown as Record<string, unknown>)?.files as FileChange[] | undefined) ?? [];
+  const files = useMemo(
+    () => ((commit as unknown as Record<string, unknown>)?.files as FileChange[] | undefined) ?? [],
+    [commit],
+  );
 
   const activeFileData = useMemo(
     () => files.find((f) => f.fileName === activeFile),
