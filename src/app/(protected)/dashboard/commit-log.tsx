@@ -5,6 +5,7 @@ import useProject from "~/hooks/use-project";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowDown } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function CommitLog() {
@@ -25,6 +26,10 @@ export default function CommitLog() {
 
   if (!project) return null;
 
+  const githubParts = project.githubUrl.replace(/\/+$/, "").split("/");
+  const owner = githubParts[githubParts.length - 2];
+  const repo = githubParts[githubParts.length - 1];
+
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-6">
       <h2 className="mb-4 text-lg font-semibold text-zinc-900">
@@ -43,9 +48,10 @@ export default function CommitLog() {
         <>
           <div className="space-y-3">
             {commits?.map((commit) => (
-              <div
+              <Link
                 key={commit.id}
-                className="rounded-xl border border-zinc-100 bg-zinc-50 p-4 transition hover:bg-zinc-100"
+                href={`/${owner}/${repo}/commit/${commit.commitHash}`}
+                className="block rounded-xl border border-zinc-100 bg-zinc-50 p-4 transition hover:bg-zinc-100"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
@@ -81,7 +87,7 @@ export default function CommitLog() {
                     {commit.summary}
                   </pre>
                 )}
-              </div>
+              </Link>
             ))}
           </div>
 

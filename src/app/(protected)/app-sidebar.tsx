@@ -9,6 +9,7 @@ import {
   Plus,
   ChevronLeft,
   LogOut,
+  GitPullRequest,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -19,6 +20,7 @@ import { signOut } from "~/lib/auth-client";
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Q&A", href: "/qa", icon: Bot },
+  { label: "Pull Requests", href: "/dashboard/prs", icon: GitPullRequest },
   { label: "Meetings", href: "/meetings", icon: Presentation },
   { label: "Billing", href: "/billing", icon: CreditCard },
 ];
