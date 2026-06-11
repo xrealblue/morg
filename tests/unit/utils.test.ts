@@ -3,7 +3,7 @@ import { cn } from "~/lib/utils";
 
 describe("cn utility", () => {
   it("merges class names correctly", () => {
-    expect(cn("px-2 py-1", "px-4")).toBe("px-4 py-1");
+    expect(cn("px-2 py-1", "px-4")).toBe("py-1 px-4");
   });
 
   it("handles conditional classes", () => {

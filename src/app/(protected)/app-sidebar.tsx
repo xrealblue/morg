@@ -117,7 +117,7 @@ export default function AppSidebar() {
         {/* Sign Out */}
         <div className="mt-auto pt-4">
           <button
-            onClick={() => signOut({ fetchOptions: { onSuccess: () => window.location.href = "/" } })}
+            onClick={() => signOut({ fetchOptions: { onSuccess: () => { window.location.href = "/"; } } })}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-zinc-600 transition-colors hover:bg-red-50 hover:text-red-600"
           >
             <LogOut className="h-5 w-5 shrink-0" />

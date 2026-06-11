@@ -5,6 +5,8 @@ import { Geist } from "next/font/google";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "sonner";
 
+import { ProjectProvider } from "~/hooks/use-project";
+
 export const metadata: Metadata = {
   title: "Morg - AI Code Analysis",
   description: "Get your project summary in seconds with AI-powered code analysis",
@@ -22,7 +24,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.variable}`}>
       <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider>
+          <ProjectProvider>{children}</ProjectProvider>
+        </TRPCReactProvider>
         <Toaster
           position="top-center"
           toastOptions={{
