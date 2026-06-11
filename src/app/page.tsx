@@ -1,69 +1,75 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { useSession } from "~/lib/auth-client";
+import { ArrowRight, Github, Sparkles } from "lucide-react";
 
-import { LatestPost } from "~/app/_components/post";
-import { auth } from "~/server/auth";
-import { api, HydrateClient } from "~/trpc/server";
-
-export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
-  const session = await auth();
-
-  if (session?.user) {
-    void api.post.getLatest.prefetch();
-  }
+export default function Home() {
+  const { data: session } = useSession();
 
   return (
-    <HydrateClient>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
-            </p>
+    <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-zinc-950">
+      {/* Aurora Background */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div
+          className="pointer-events-none absolute -inset-[10px] opacity-50 will-change-transform blur-[10px]"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(100deg, #000 0%, #000 7%, transparent 10%, transparent 12%, #000 16%), repeating-linear-gradient(100deg, #3b82f6 10%, #818cf8 15%, #93c5fd 20%, #c4b5fd 25%, #60a5fa 30%)",
+            backgroundSize: "300% 200%",
+            animation: "aurora 60s linear infinite",
+          }}
+        />
+      </div>
 
-            <div className="flex flex-col items-center justify-center gap-4">
-              <p className="text-center text-2xl text-white">
-                {session && <span>Logged in as {session.user?.name}</span>}
-              </p>
-              <Link
-                href={session ? "/api/auth/signout" : "/api/auth/signin"}
-                className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-              >
-                {session ? "Sign out" : "Sign in"}
-              </Link>
-            </div>
-          </div>
-
-          {session?.user && <LatestPost />}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.8, ease: "easeInOut" }}
+        className="relative z-10 flex flex-col items-center gap-6 px-4 text-center"
+      >
+        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70">
+          <Sparkles className="h-4 w-4" />
+          AI-Powered Code Analysis
         </div>
-      </main>
-    </HydrateClient>
+
+        <h1 className="max-w-4xl text-4xl font-bold tracking-tight text-white md:text-7xl">
+          Understand your codebase{" "}
+          <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
+            instantly
+          </span>
+        </h1>
+
+        <p className="max-w-2xl text-lg text-white/60 md:text-xl">
+          Get AI-powered summaries of every commit, ask questions about your code,
+          and onboard faster with intelligent code analysis.
+        </p>
+
+        <div className="mt-4 flex items-center gap-4">
+          <Link
+            href={session ? "/dashboard" : "/sign-in"}
+            className="flex items-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-black transition hover:bg-white/90"
+          >
+            {session ? "Go to Dashboard" : "Get Started"}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link
+            href="https://github.com/xrealblue/morg"
+            target="_blank"
+            className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
+          >
+            <Github className="h-4 w-4" />
+            GitHub
+          </Link>
+        </div>
+
+        {session && (
+          <p className="mt-2 text-sm text-white/50">
+            Welcome back, {session.user.name}
+          </p>
+        )}
+      </motion.div>
+    </main>
   );
 }
