@@ -1,29 +1,66 @@
-# Create T3 App
+# Morg
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+AI-powered GitHub code analysis platform. Get instant summaries of commits, ask questions about your codebase, and onboard to new projects faster.
 
-## What's next? How do I make an app with this?
+## Tech Stack
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- **Framework**: Next.js 15 (App Router) + React 19
+- **API**: tRPC v11 (type-safe)
+- **Database**: PostgreSQL + Prisma 6 + pgvector
+- **Auth**: better-auth (GitHub OAuth)
+- **AI**: Google Gemini 2.0 Flash + text-embedding-004
+- **Styling**: Tailwind CSS v4
+- **Testing**: Vitest + Playwright
+- **Package Manager**: Bun
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Getting Started
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+```bash
+# Install dependencies
+bun install
 
-## Learn More
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your credentials
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+# Push database schema
+bun run db:push
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+# Start dev server
+bun run dev
+```
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+## Environment Variables
 
-## How do I deploy this?
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string (with pgvector extension) |
+| `BETTER_AUTH_SECRET` | Auth encryption secret (min 32 chars) |
+| `BETTER_AUTH_URL` | App base URL |
+| `GITHUB_CLIENT_ID` | GitHub OAuth App client ID |
+| `GITHUB_CLIENT_SECRET` | GitHub OAuth App client secret |
+| `GITHUB_TOKEN` | Personal access token for GitHub API |
+| `GEMINI_API_KEY` | Google AI Studio API key |
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+## Features
+
+- GitHub authentication via better-auth
+- Link GitHub repositories for analysis
+- AI-summarized commit history (Gemini 2.0 Flash)
+- Semantic code search with pgvector embeddings
+- Ask questions about your codebase with RAG
+- Streaming AI responses
+- Responsive sidebar navigation
+
+## Scripts
+
+```bash
+bun run dev          # Start development server
+bun run build        # Production build
+bun run typecheck    # TypeScript check
+bun run test         # Run unit tests
+bun run test:e2e     # Run E2E tests
+bun run db:push      # Push schema to database
+bun run db:studio    # Open Prisma Studio
+bun run analyze      # Bundle analysis
+```
