@@ -19,34 +19,34 @@ export default function AISummaryCard({
   const [expanded, setExpanded] = useState(true);
 
   return (
-    <div className="border-b border-zinc-200 bg-white">
+    <div className="border-b border-zinc-800">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center justify-between px-6 py-2.5 text-left"
+        className="flex w-full items-center justify-between px-4 py-2.5 text-left"
       >
         <div className="flex items-center gap-2">
-          <Sparkles className="h-3.5 w-3.5 text-blue-500" />
-          <span className="text-xs font-medium text-zinc-700">{label}</span>
+          <Sparkles className="h-3.5 w-3.5 text-blue-400" />
+          <span className="text-xs font-medium text-zinc-400">{label}</span>
         </div>
         {expanded ? (
-          <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
+          <ChevronDown className="h-3.5 w-3.5 text-zinc-600" />
         ) : (
-          <ChevronRight className="h-3.5 w-3.5 text-zinc-400" />
+          <ChevronRight className="h-3.5 w-3.5 text-zinc-600" />
         )}
       </button>
 
       {expanded && (
-        <div className="border-t border-zinc-100 px-6 pb-3 pt-2.5">
+        <div className="border-t border-zinc-800 px-4 pb-3 pt-2.5">
           {summary ? (
             <div className="space-y-2">
-              <pre className="whitespace-pre-wrap text-xs leading-relaxed text-zinc-600">
+              <pre className="whitespace-pre-wrap text-xs leading-relaxed text-zinc-400">
                 {summary}
               </pre>
               {onGenerate && (
                 <button
                   onClick={onGenerate}
                   disabled={isGenerating}
-                  className="inline-flex items-center gap-1.5 bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-600 transition hover:bg-zinc-200 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 bg-zinc-800 px-2.5 py-1 text-xs font-medium text-zinc-400 transition hover:bg-zinc-700 disabled:opacity-50"
                 >
                   <RefreshCw
                     className={`h-3 w-3 ${isGenerating ? "animate-spin" : ""}`}
@@ -59,7 +59,7 @@ export default function AISummaryCard({
             <button
               onClick={onGenerate}
               disabled={isGenerating}
-              className="inline-flex items-center gap-2 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-600 transition hover:bg-blue-100 disabled:opacity-50"
+              className="inline-flex items-center gap-2 bg-blue-900/30 px-3 py-1.5 text-xs font-medium text-blue-400 transition hover:bg-blue-900/50 disabled:opacity-50"
             >
               {isGenerating ? (
                 <>
@@ -74,7 +74,7 @@ export default function AISummaryCard({
               )}
             </button>
           ) : (
-            <p className="text-xs text-zinc-400">No summary available.</p>
+            <p className="text-xs text-zinc-600">No summary available.</p>
           )}
         </div>
       )}

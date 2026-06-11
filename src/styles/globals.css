@@ -6,15 +6,15 @@
   --font-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
     Consolas, monospace;
 
-  --color-background: #ffffff;
-  --color-foreground: #09090b;
-  --color-muted: #f4f4f5;
-  --color-muted-foreground: #71717a;
-  --color-border: #e4e4e7;
-  --color-primary: #18181b;
-  --color-primary-foreground: #fafafa;
-  --color-accent: #f4f4f5;
-  --color-accent-foreground: #18181b;
+  --color-background: #0a0a0b;
+  --color-foreground: #e4e4e7;
+  --color-muted: #18181b;
+  --color-muted-foreground: #a1a1aa;
+  --color-border: #27272a;
+  --color-primary: #fafafa;
+  --color-primary-foreground: #18181b;
+  --color-accent: #27272a;
+  --color-accent-foreground: #fafafa;
   --color-destructive: #ef4444;
 
   --animate-aurora: aurora 60s linear infinite;
@@ -44,16 +44,16 @@ samp {
   font-family: var(--font-mono);
 }
 
-.dark {
-  --color-background: #0a0a0b;
-  --color-foreground: #e4e4e7;
-  --color-muted: #18181b;
-  --color-muted-foreground: #a1a1aa;
-  --color-border: #27272a;
-  --color-primary: #fafafa;
-  --color-primary-foreground: #18181b;
-  --color-accent: #27272a;
-  --color-accent-foreground: #fafafa;
+.light {
+  --color-background: #ffffff;
+  --color-foreground: #09090b;
+  --color-muted: #f4f4f5;
+  --color-muted-foreground: #71717a;
+  --color-border: #e4e4e7;
+  --color-primary: #18181b;
+  --color-primary-foreground: #fafafa;
+  --color-accent: #f4f4f5;
+  --color-accent-foreground: #18181b;
 }
 
 /* Hide scrollbar */

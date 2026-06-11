@@ -63,27 +63,27 @@ export default function DiffViewer({ original, modified, language, filePath }: P
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between border-b border-zinc-200 bg-zinc-50 px-4 py-2">
+      <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900 px-4 py-2">
         {filePath && (
-          <span className="text-sm font-medium text-zinc-700">{filePath}</span>
+          <span className="text-sm font-medium text-zinc-400">{filePath}</span>
         )}
-        <div className="flex items-center gap-1 rounded-lg bg-zinc-100 p-0.5">
+        <div className="flex items-center gap-1 bg-zinc-800 p-0.5">
           <button
             onClick={() => setViewMode("side-by-side")}
-            className={`rounded-md px-3 py-1 text-xs font-medium transition ${
+            className={`px-3 py-1 text-xs font-medium transition ${
               viewMode === "side-by-side"
-                ? "bg-white text-zinc-900 shadow-sm"
-                : "text-zinc-500 hover:text-zinc-700"
+                ? "bg-zinc-700 text-zinc-100"
+                : "text-zinc-500 hover:text-zinc-300"
             }`}
           >
             Side-by-side
           </button>
           <button
             onClick={() => setViewMode("unified")}
-            className={`rounded-md px-3 py-1 text-xs font-medium transition ${
+            className={`px-3 py-1 text-xs font-medium transition ${
               viewMode === "unified"
-                ? "bg-white text-zinc-900 shadow-sm"
-                : "text-zinc-500 hover:text-zinc-700"
+                ? "bg-zinc-700 text-zinc-100"
+                : "text-zinc-500 hover:text-zinc-300"
             }`}
           >
             Unified
