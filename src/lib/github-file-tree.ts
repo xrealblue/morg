@@ -12,11 +12,21 @@ interface TreeItem {
   size: number | null;
 }
 
+const treeCache = new Map<string, { data: TreeItem[]; expiry: number }>();
+const TREE_TTL = 1000 * 60 * 5;
+
 export async function getRepoFileTree(
   owner: string,
   repo: string,
   ref = "HEAD",
 ): Promise<TreeItem[]> {
+  const cacheKey = `${owner}/${repo}/${ref}`;
+
+  const cached = treeCache.get(cacheKey);
+  if (cached && Date.now() < cached.expiry) {
+    return cached.data;
+  }
+
   const { data } = await octokit.rest.git.getTree({
     owner,
     repo,
@@ -24,13 +34,17 @@ export async function getRepoFileTree(
     recursive: "1",
   });
 
-  return (data.tree ?? []).map((item) => ({
+  const items: TreeItem[] = (data.tree ?? []).map((item) => ({
     path: item.path ?? "",
     type: (item.type as "blob" | "tree") ?? "blob",
     mode: item.mode ?? "100644",
     sha: item.sha ?? "",
     size: item.size ?? null,
   }));
+
+  treeCache.set(cacheKey, { data: items, expiry: Date.now() + TREE_TTL });
+
+  return items;
 }
 
 export function buildFileTree(items: TreeItem[]) {

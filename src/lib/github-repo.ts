@@ -54,14 +54,21 @@ export async function getRepoInfo(
   return info;
 }
 
-export async function getRepoOverview(owner: string, repo: string) {
+export async function getRepoOverview(owner: string, repo: string): Promise<Overview> {
+  const cacheKey = `${owner}/${repo}`;
+
+  const cached = overviewCache.get(cacheKey);
+  if (cached && Date.now() < cached.expiry) {
+    return cached.data;
+  }
+
   const [repoInfo, commitsRes, pullsRes] = await Promise.all([
     getRepoInfo(owner, repo),
     octokit.rest.repos.listCommits({ owner, repo, per_page: 10 }),
     octokit.rest.pulls.list({ owner, repo, state: "all", per_page: 10 }),
   ]);
 
-  return {
+  const data: Overview = {
     repo: repoInfo,
     commits: commitsRes.data.map((c) => ({
       sha: c.sha,
@@ -79,4 +86,8 @@ export async function getRepoOverview(owner: string, repo: string) {
       createdAt: pr.created_at,
     })),
   };
+
+  overviewCache.set(cacheKey, { data, expiry: Date.now() + OVERVIEW_TTL });
+
+  return data;
 }

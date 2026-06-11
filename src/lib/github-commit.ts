@@ -130,16 +130,20 @@ export async function getCommitDetail(owner: string, repo: string, sha: string) 
 
   const detail = await fetchCommitFromGitHub(owner, repo, sha);
 
+  // Cache commit data immediately so subsequent requests skip the GitHub API
+  await setCachedCommit(fullName, sha, detail);
+
+  // Run AI summary in background — don't block the response
   let summary: string | null = null;
   try {
     summary = await aiSummarize(
       detail.files.map((f) => f.patch).filter(Boolean).join("\n"),
     );
+    // Update cache with summary now that it's ready
+    await setCachedCommit(fullName, sha, detail, summary);
   } catch (e) {
-    console.error("AI summary failed, caching without it:", e);
+    console.error("AI summary failed, cached without it:", e);
   }
-
-  await setCachedCommit(fullName, sha, detail, summary ?? undefined);
 
   return { ...detail, summary };
 }
