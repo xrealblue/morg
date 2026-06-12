@@ -424,3 +424,19 @@
   @apply md:p-0 md:opacity-100 md:shadow-none md:transition-none;
   @apply md:sticky md:top-22 md:max-h-[calc(100vh-112px)];
 }
+
+@media (width <= 640px) {
+  .diff-view-code {
+    font-size: 13px;
+  }
+}
+
+@media (width >= 641px) {
+  .diff-view-code {
+    font-size: 13px;
+  }
+}
+
+::selection {
+  background-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
