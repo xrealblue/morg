@@ -4,8 +4,7 @@ import { use, useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { api } from "~/trpc/react";
 import AISummaryCard from "~/components/diff/ai-summary-card";
 import FileTreeSidebar from "~/components/diff/file-tree-sidebar";
-import { ThemedCodeView } from "~/components/theming/react/ThemedCodeView";
-import { CodeViewHeader } from "~/components/CodeViewHeader";
+import { DiffViewWrapper } from "~/components/DiffViewWrapper";
 import { processPatch, type CodeViewDiffItem, type CodeViewItem } from "@pierre/diffs";
 import type { FileChange } from "~/components/diff/types";
 import { Sparkles, Loader2 } from "lucide-react";
@@ -228,18 +227,11 @@ export default function CommitPage({ params }: Props) {
 
       {/* Right Side — scrollable diff view */}
       <div ref={diffContainerRef} className="flex min-w-0 flex-1 flex-col overflow-y-auto bg-[var(--background)] diff-view-code">
-        <CodeViewHeader initialUrl={`https://github.com/${owner}/${repo}/commit/${sha}`} />
-        {diffItems.length > 0 ? (
-          <ThemedCodeView
-            initialItems={diffItems}
-            options={{ stickyHeaders: true }}
-            renderHeaderMetadata={renderHeaderMetadata}
-          />
-        ) : (
-          <div className="flex flex-1 items-center justify-center text-sm text-[var(--muted-foreground)]/70">
-            No files changed
-          </div>
-        )}
+        <DiffViewWrapper
+          initialUrl={`https://github.com/${owner}/${repo}/commit/${sha}`}
+          diffItems={diffItems}
+          renderHeaderMetadata={renderHeaderMetadata}
+        />
       </div>
     </div>
   );
