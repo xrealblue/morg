@@ -73,10 +73,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
   const embeddingModel = genai.getGenerativeModel({
     model: "gemini-embedding-001",
   });
-  const response = await embeddingModel.embedContent({
-    content: { role: "user", parts: [{ text }] },
-    outputDimensionality: 768,
-  });
+  const response = await embeddingModel.embedContent(text);
   return response.embedding.values;
 }
 
