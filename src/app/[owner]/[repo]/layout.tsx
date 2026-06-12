@@ -22,11 +22,11 @@ export default function RepoLayout({ children }: { children: React.ReactNode }) 
   );
 
   return (
-    <div>
+    <div className="flex h-screen flex-col">
       <header className="sticky top-0 z-10 border-b border-[var(--color-border)] bg-[var(--diffshub-sidebar-bg)]">
         <div className="flex h-12 items-center justify-between px-4">
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-sm font-bold text-[var(--foreground)]">
+            <Link href="/" className="text-sm font-bold text-[var(--foreground)]" style={{ fontFamily: "var(--font-berkeley-mono)" }}>
               Morg
             </Link>
             <form onSubmit={handleSubmit} className="flex items-center">
@@ -54,7 +54,7 @@ export default function RepoLayout({ children }: { children: React.ReactNode }) 
           </nav>
         </div>
       </header>
-      <main>{children}</main>
+      <main className="flex-1 overflow-hidden">{children}</main>
     </div>
   );
 }

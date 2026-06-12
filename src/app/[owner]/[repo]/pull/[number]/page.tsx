@@ -184,9 +184,9 @@ export default function PullRequestPage({ params }: Props) {
   const p = pr as unknown as Record<string, unknown>;
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-full">
       {/* Left Sidebar — sticky to screen */}
-      <div className="sticky top-0 flex h-screen w-80 shrink-0 flex-col border-r border-[var(--color-border)] bg-[var(--diffshub-sidebar-bg)]">
+      <div className="sticky top-0 flex h-full w-80 shrink-0 flex-col border-r border-[var(--color-border)] bg-[var(--diffshub-sidebar-bg)]">
         <div className="border-b border-[var(--color-border)] px-4 py-3">
           <div className="flex items-center gap-2 mb-1">
             <span
@@ -239,7 +239,7 @@ export default function PullRequestPage({ params }: Props) {
           label="AI Summary"
         />
 
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-y-auto no-scrollbar">
           <FileTreeSidebar
             files={files}
             activeFile={null}
@@ -249,7 +249,7 @@ export default function PullRequestPage({ params }: Props) {
       </div>
 
       {/* Right Side — scrollable diff view */}
-      <div className="flex min-w-0 flex-1 flex-col overflow-y-auto bg-[var(--background)]">
+      <div className="flex min-w-0 flex-1 flex-col overflow-y-auto bg-[var(--background)] diff-view-code">
         {diffItems.length > 0 ? (
           <ThemedCodeView
             initialItems={diffItems}

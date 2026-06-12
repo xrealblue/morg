@@ -5,7 +5,8 @@
 @custom-variant dark (&:is(.dark *, .dark));
 
 @theme {
-  --font-geist: var(--font-berkeley-mono);
+  --font-geist: var(--font-manrope);
+  --font-code: var(--font-berkeley-mono);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -281,8 +282,8 @@
 }
 
 .cv-scrollbar::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
+  width: 6px;
+  height: 6px;
 }
 
 .cv-scrollbar::-webkit-scrollbar-track {
@@ -295,8 +296,12 @@
 .cv-scrollbar::-webkit-scrollbar-thumb {
   background-color: var(--cv-scrollbar-thumb-bg);
   background-clip: content-box;
-  border: 2px solid transparent;
-  border-radius: 6px;
+  border: 1.5px solid transparent;
+  border-radius: 3px;
+}
+
+.cv-scrollbar::-webkit-scrollbar-button {
+  display: none;
 }
 
 .cv-mini-scrollbar {
@@ -305,8 +310,8 @@
 }
 
 .cv-mini-scrollbar::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 5px;
+  height: 5px;
 }
 
 .cv-mini-scrollbar::-webkit-scrollbar-track {
@@ -323,8 +328,18 @@
 .cv-mini-scrollbar::-webkit-scrollbar-thumb {
   background-color: var(--cv-mini-scrollbar-thumb-bg);
   background-clip: content-box;
-  border: 3px solid transparent;
-  border-radius: 5px;
+  border: 1.5px solid transparent;
+  border-radius: 2.5px;
+}
+
+.cv-mini-scrollbar::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* Code viewer uses Berkeley Mono */
+.diff-view-code,
+.diff-view-code * {
+  font-family: var(--font-code);
 }
 
 @supports (-moz-appearance: none) {
