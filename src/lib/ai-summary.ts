@@ -1,5 +1,9 @@
 import { db } from "~/server/db";
-import { generateWithTimeout } from "./gemini";
+import { aiSummarize, generateWithTimeout } from "./gemini";
+import {
+  getCachedCommit, setCachedCommit,
+  getCachedPR, setCachedPR,
+} from "./cache";
 
 export async function summarizeFileDiff(
   fileName: string,
@@ -85,7 +89,6 @@ export async function summarizeCommitCache(
   repo: string,
   sha: string,
 ): Promise<string> {
-  const { getCachedCommit, setCachedCommit } = await import("./cache");
   const fullName = `${owner}/${repo}`;
   const cached = await getCachedCommit(fullName, sha);
   if (!cached) return "Commit not found in cache.";
@@ -95,7 +98,7 @@ export async function summarizeCommitCache(
   if (!patches) return "No diff available.";
 
   try {
-    const summary = await generateWithTimeout(patches);
+    const summary = await aiSummarize(patches);
     await setCachedCommit(fullName, sha, cached.data, summary);
     return summary;
   } catch {
@@ -108,7 +111,6 @@ export async function summarizePRCache(
   repo: string,
   prNumber: number,
 ): Promise<string> {
-  const { getCachedPR, setCachedPR } = await import("./cache");
   const fullName = `${owner}/${repo}`;
   const cached = await getCachedPR(fullName, prNumber);
   if (!cached) return "Pull request not found.";
@@ -137,7 +139,6 @@ export async function summarizeFileFromCache(
   sha: string,
   fileName: string,
 ): Promise<string> {
-  const { getCachedCommit } = await import("./cache");
   const fullName = `${owner}/${repo}`;
   const cached = await getCachedCommit(fullName, sha);
   if (!cached) return "Commit not found.";

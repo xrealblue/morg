@@ -8,7 +8,7 @@ const MODELS = [
   "gemini-1.5-flash",
 ];
 
-const TIMEOUT_MS = 15000;
+const TIMEOUT_MS = 20000;
 
 async function generateWithTimeout(prompt: string | string[]): Promise<string> {
   let lastError: unknown;
@@ -29,6 +29,7 @@ async function generateWithTimeout(prompt: string | string[]): Promise<string> {
       }
     }
   }
+  console.error("Gemini API all attempts failed:", lastError);
   throw lastError;
 }
 

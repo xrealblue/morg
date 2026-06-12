@@ -42,6 +42,12 @@ export default function PullRequestPage({ params }: Props) {
     owner,
     repo,
     prNumber,
+  }, {
+    refetchInterval: (query) => {
+      const data = query.state.data as Record<string, unknown> | undefined;
+      if (data && data.summary) return false;
+      return 3000;
+    },
   });
 
   const regenerateMutation = api.public.regeneratePRSummary.useMutation({

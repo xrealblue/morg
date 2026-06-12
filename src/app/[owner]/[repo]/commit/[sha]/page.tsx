@@ -40,6 +40,12 @@ export default function CommitPage({ params }: Props) {
     owner,
     repo,
     sha,
+  }, {
+    refetchInterval: (query) => {
+      const data = query.state.data as Record<string, unknown> | undefined;
+      if (data && data.summary) return false;
+      return 3000;
+    },
   });
 
   const regenerateMutation = api.public.regenerateCommitSummary.useMutation({
