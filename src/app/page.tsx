@@ -1,125 +1,119 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { ArrowRight, Github, Sparkles, Search, GitCommit, GitPullRequest } from "lucide-react";
-import { useState } from "react";
+import { ArrowRight, Github } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+
+import { DiffUrlForm } from '~/components/DiffUrlForm';
+import { MorgLogo } from '~/components/MorgLogo';
+import { Button } from '~/components/ui/button';
+
+const DIFF_LINE_BADGE = 'inline-flex rounded-r py-0.25 pr-1.5 pl-1.5';
+const DIFF_LINE_DELETED_BADGE = `${DIFF_LINE_BADGE} bg-[#ff6762]/15 text-[#ff2e3f] dark:bg-[#ff6762]/10 dark:text-[#ff6762]`;
+const DIFF_LINE_ADDED_BADGE = `${DIFF_LINE_BADGE} bg-[#07c480]/15 text-[#18a46c] dark:bg-[#07c480]/10 dark:text-[#07c480]`;
+
+const EXAMPLE_URLS = [
+  'xrealblue/morg/pull/1',
+  'nodejs/node/pull/59805',
+  'oven-sh/bun/pull/30412',
+] as const;
 
 export default function Home() {
-  const [repoUrl, setRepoUrl] = useState("");
-
-  const handleExplore = () => {
-    const match = repoUrl.match(/github\.com\/([\w.-]+\/[\w.-]+)/);
-    if (match) {
-      window.location.href = `/${match[1]}`;
-    }
-  };
+  const [repoUrl, setRepoUrl] = useState('');
 
   return (
-    <main className="relative flex min-h-screen flex-col items-center overflow-hidden bg-zinc-950">
-      {/* Aurora Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div
-          className="pointer-events-none absolute -inset-[10px] opacity-50 will-change-transform blur-[10px]"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(100deg, #000 0%, #000 7%, transparent 10%, transparent 12%, #000 16%), repeating-linear-gradient(100deg, #3b82f6 10%, #818cf8 15%, #93c5fd 20%, #c4b5fd 25%, #60a5fa 30%)",
-            backgroundSize: "300% 200%",
-            animation: "aurora 60s linear infinite",
-          }}
-        />
-      </div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.8, ease: "easeInOut" }}
-        className="relative z-10 flex flex-col items-center gap-6 px-4 pt-24 text-center"
-      >
-        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70">
-          <Sparkles className="h-4 w-4" />
-          AI-Powered Code Analysis
-        </div>
-
-        <h1 className="max-4xl text-4xl font-bold tracking-tight text-white md:text-7xl">
-          Understand your codebase{" "}
-          <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
-            instantly
-          </span>
-        </h1>
-
-        <p className="max-w-2xl text-lg text-white/60 md:text-xl">
-          Explore any public GitHub repository — browse commits, pull requests,
-          and code diffs with AI-powered summaries. No login required.
+    <div className="flex min-h-[100svh] flex-col items-center justify-center md:bg-[var(--diffshub-sidebar-bg)] md:py-12">
+      <section className="relative flex min-h-[100svh] w-full max-w-[640px] flex-col justify-center space-y-4 px-6 pt-8 text-sm md:block md:min-h-0">
+        <h2 className="flex items-center gap-1.5 text-2xl font-semibold tracking-tight">
+          <MorgLogo />
+          <span style={{ fontFamily: 'var(--font-berkeley-mono)' }}>Morg</span>
+        </h2>
+        <p className="text-muted-foreground text-pretty">
+          AI-powered code analysis for any public GitHub repository. Browse
+          commits, pull requests, and code diffs with intelligent summaries.
+          No login required.
         </p>
-
-        <div className="mt-4 flex w-full max-w-lg items-center gap-2 rounded-2xl border border-white/10 bg-white/5 p-2">
-          <div className="flex items-center gap-2 pl-3">
-            <Search className="h-4 w-4 text-white/40" />
-          </div>
-          <input
-            type="text"
-            value={repoUrl}
-            onChange={(e) => setRepoUrl(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleExplore()}
-            placeholder="Enter a GitHub URL (e.g. facebook/react)"
-            className="flex-1 bg-transparent px-2 py-2 text-sm text-white placeholder-white/30 outline-none"
-          />
-          <button
-            onClick={handleExplore}
-            disabled={!repoUrl}
-            className="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-black transition hover:bg-white/90 disabled:opacity-50"
+        <div className="text-muted-foreground flex flex-col gap-[2px] font-mono leading-[22px] tracking-tight">
+          <code className="rounded-l font-normal text-inherit">
+            <span className="min-w-0 truncate">
+              <code className={DIFF_LINE_DELETED_BADGE}>- github</code>
+              .com/org/repo/pull/number
+            </span>
+          </code>
+          <code className="truncate rounded-l border-l-[4px] border-[#07c480] font-normal text-inherit">
+            <code className={DIFF_LINE_ADDED_BADGE}>+ morg</code>
+            .app/org/repo/pull/number
+          </code>
+        </div>
+        <div className="bg-accent md:bg-background rounded-lg border px-4 md:my-6">
+          <DiffUrlForm
+            placeholder="https://github.com/org/repo/123"
+            inputClassName="text-md h-12 w-full text-start"
           >
-            Explore
-          </button>
+            {(isPending, url) => (
+              <Button
+                type="submit"
+                variant="ghost"
+                size="icon-md"
+                disabled={isPending || url.length === 0}
+                aria-label={isPending ? 'Loading…' : 'Go'}
+                className="hover:text-muted-foreground -mr-2 hover:bg-transparent"
+              >
+                <ArrowRight className="size-4" />
+              </Button>
+            )}
+          </DiffUrlForm>
         </div>
-
-        <div className="flex items-center gap-6 text-sm text-white/40">
-          <span className="flex items-center gap-1.5">
-            <GitCommit className="h-4 w-4" />
-            Commit diffs
-          </span>
-          <span className="flex items-center gap-1.5">
-            <GitPullRequest className="h-4 w-4" />
-            PR reviews
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Sparkles className="h-4 w-4" />
-            AI summaries
-          </span>
+        <div className="space-y-2">
+          <h3 className="text-muted-foreground text-sm font-normal">
+            Enter a URL above, or try one of these:
+          </h3>
+          <ul className="mb-5 flex flex-col gap-1 text-sm">
+            {EXAMPLE_URLS.map((url) => (
+              <li key={url} className="flex items-start justify-start gap-1">
+                <ArrowRight className="mt-0.5 size-4 flex-shrink-0 opacity-50" />
+                <div>
+                  <Link href={`/${url}`} className="inline-link">
+                    <span className="hidden md:inline">
+                      https://github.com/
+                    </span>
+                    {url}
+                  </Link>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6, duration: 0.8 }}
-        className="relative z-10 mt-12 flex items-center gap-4"
-      >
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            const input = document.querySelector("input");
-            if (input?.value) {
-              const match = input.value.match(/github\.com\/([\w.-]+\/[\w.-]+)/);
-              if (match) window.location.href = `/${match[1]}`;
-            }
-          }}
-          className="flex items-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-black transition hover:bg-white/90"
+      </section>
+      <section className="w-full max-w-[640px] space-y-4 px-5 pb-8">
+        <hr className="my-8 max-w-[80px] opacity-50" />
+        <p className="text-muted-foreground text-sm text-pretty">
+          Built with{' '}
+          <Link
+            href="https://diffs.com/docs#codeview"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-link"
+          >
+            CodeView
+          </Link>{' '}
+          and powered by AI summaries via Google Gemini.
+        </p>
+        <nav
+          aria-label="Social links"
+          className="-ml-2 flex items-center gap-2 pt-2"
         >
-          Get Started
-          <ArrowRight className="h-4 w-4" />
-        </a>
-        <a
-          href="https://github.com/xrealblue/morg"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
-        >
-          <Github className="h-4 w-4" />
-          GitHub
-        </a>
-      </motion.div>
-    </main>
+          <a
+            href="https://github.com/xrealblue/morg"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+            className="text-muted-foreground hover:text-foreground rounded-md p-2 transition-colors"
+          >
+            <Github className="size-5" />
+          </a>
+        </nav>
+      </section>
+    </div>
   );
 }
