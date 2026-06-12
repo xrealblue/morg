@@ -346,6 +346,7 @@
   .cv-scrollbar {
     scrollbar-color: var(--cv-scrollbar-thumb-bg)
       var(--diffshub-scrollbar-track-bg, transparent);
+    scrollbar-width: thin;
   }
   .cv-mini-scrollbar {
     scrollbar-color: var(--cv-mini-scrollbar-thumb-bg) transparent;
