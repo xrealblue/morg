@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { use, useMemo, useState, useCallback } from "react";
+import { use, useMemo, useState, useCallback, useEffect, useRef } from "react";
 import { api } from "~/trpc/react";
 import AISummaryCard from "~/components/diff/ai-summary-card";
 import FileTreeSidebar from "~/components/diff/file-tree-sidebar";
@@ -54,6 +54,17 @@ export default function PullRequestPage({ params }: Props) {
     onSuccess: () => refetch(),
   });
 
+  const d = pr as unknown as Record<string, unknown> | undefined;
+  const summary = (d?.summary as string) ?? null;
+
+  const hasTriggeredGeneration = useRef(false);
+  useEffect(() => {
+    if (pr && !summary && !regenerateMutation.isPending && !hasTriggeredGeneration.current) {
+      hasTriggeredGeneration.current = true;
+      regenerateMutation.mutate({ owner, repo, prNumber });
+    }
+  }, [pr, summary, regenerateMutation, owner, repo, prNumber]);
+
   const fileSummaryMutation = api.public.summarizeFileByPR.useMutation();
 
   const [fileSummaries, setFileSummaries] = useState<Record<string, string>>({});
@@ -79,6 +90,15 @@ export default function PullRequestPage({ params }: Props) {
       return [];
     }
   }, [files, prNumber]);
+
+  const handleFileSelect = useCallback((fileName: string) => {
+    const idx = files.findIndex((f) => f.fileName === fileName);
+    if (idx === -1) return;
+    const el = document.querySelector(`[data-diff-file-idx="${idx}"]`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [files]);
 
   const handleSummarizeFile = useCallback(
     (fileName: string) => {
@@ -116,7 +136,7 @@ export default function PullRequestPage({ params }: Props) {
       const isSummarizing = summarizingFiles.has(fileName);
 
       return (
-        <div className="flex items-center gap-2">
+        <div data-diff-file-idx={files.findIndex((f) => f.fileName === fileName)} className="flex items-center gap-2">
           {summary ? (
             <span className="max-w-96 truncate text-xs text-[var(--muted-foreground)]" title={summary}>
               {summary}
@@ -142,7 +162,7 @@ export default function PullRequestPage({ params }: Props) {
         </div>
       );
     },
-    [fileSummaries, summarizingFiles, handleSummarizeFile],
+    [fileSummaries, summarizingFiles, handleSummarizeFile, files],
   );
 
   if (isLoading) {
@@ -161,12 +181,10 @@ export default function PullRequestPage({ params }: Props) {
     );
   }
 
-  const d = pr as unknown as Record<string, unknown>;
-  const summary = (d.summary as string) ?? null;
-
   return (
-    <div className="flex h-screen">
-      <div className="flex w-80 shrink-0 flex-col border-r border-[var(--color-border)] bg-[var(--diffshub-sidebar-bg)]">
+    <div className="flex h-screen overflow-hidden">
+      {/* Left Sidebar — sticky to screen */}
+      <div className="sticky top-0 flex h-screen w-80 shrink-0 flex-col border-r border-[var(--color-border)] bg-[var(--diffshub-sidebar-bg)]">
         <div className="border-b border-[var(--color-border)] px-4 py-3">
           <div className="flex items-center gap-2 mb-1">
             <span
@@ -223,12 +241,13 @@ export default function PullRequestPage({ params }: Props) {
           <FileTreeSidebar
             files={files}
             activeFile={null}
-            onFileSelect={() => {}}
+            onFileSelect={handleFileSelect}
           />
         </div>
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col bg-[var(--background)]">
+      {/* Right Side — scrollable diff view */}
+      <div className="flex min-w-0 flex-1 flex-col overflow-y-auto bg-[var(--background)]">
         {diffItems.length > 0 ? (
           <ThemedCodeView
             initialItems={diffItems}
