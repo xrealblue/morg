@@ -1,7 +1,6 @@
 import "~/styles/globals.css";
 
 import { type Metadata } from "next";
-import { Geist } from "next/font/google";
 import localFont from "next/font/local";
 import { TRPCReactProvider } from "~/trpc/react";
 import { Toaster } from "sonner";
@@ -15,11 +14,6 @@ export const metadata: Metadata = {
   description: "Get your project summary in seconds with AI-powered code analysis",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 const berkeleyMono = localFont({
   src: "../../public/fonts/BerkeleyMono-Regular.otf",
@@ -66,7 +60,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${berkeleyMono.variable} ${geistSans.variable}`}
+      className={berkeleyMono.variable}
     >
       <head>
         <script

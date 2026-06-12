@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *, .dark));
 
 @theme {
-  --font-geist: var(--font-geist-sans);
+  --font-geist: var(--font-berkeley-mono);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -181,7 +181,6 @@
 }
 
 :root {
-  --diffs-font-family: var(--font-berkeley-mono);
   --cv-gutter-vertical: 0px;
   --cv-gutter-horizontal: 0px;
   --cv-mini-gutter-vertical: 0px;
@@ -204,7 +203,6 @@
     @apply outline-offset-1;
   }
   code {
-    font-family: var(--diffs-font-family);
     font-size: 95%;
     font-weight: 500;
     color: var(--color-primary);
