@@ -12,6 +12,8 @@ const DropdownMenuGroup = DropdownMenuPrimitive.Group;
 const DropdownMenuPortal = DropdownMenuPrimitive.Portal;
 const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 
+const DropdownMenuSub = DropdownMenuPrimitive.Sub;
+
 const DropdownMenuSubTrigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & {
