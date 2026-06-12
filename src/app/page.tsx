@@ -1,13 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
-import { useSession } from "~/lib/auth-client";
 import { ArrowRight, Github, Sparkles, Search, GitCommit, GitPullRequest } from "lucide-react";
 import { useState } from "react";
 
 export default function Home() {
-  const { data: session } = useSession();
   const [repoUrl, setRepoUrl] = useState("");
 
   const handleExplore = () => {
@@ -98,33 +95,31 @@ export default function Home() {
         transition={{ delay: 0.6, duration: 0.8 }}
         className="relative z-10 mt-12 flex items-center gap-4"
       >
-        <Link
-          href={session ? "/dashboard" : "/sign-in"}
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            const input = document.querySelector("input");
+            if (input?.value) {
+              const match = input.value.match(/github\.com\/([\w.-]+\/[\w.-]+)/);
+              if (match) window.location.href = `/${match[1]}`;
+            }
+          }}
           className="flex items-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-black transition hover:bg-white/90"
         >
-          {session ? "Go to Dashboard" : "Get Started"}
+          Get Started
           <ArrowRight className="h-4 w-4" />
-        </Link>
-        <Link
+        </a>
+        <a
           href="https://github.com/xrealblue/morg"
           target="_blank"
+          rel="noopener noreferrer"
           className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 font-semibold text-white transition hover:bg-white/10"
         >
           <Github className="h-4 w-4" />
           GitHub
-        </Link>
+        </a>
       </motion.div>
-
-      {session && (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9 }}
-          className="relative z-10 mt-4 text-sm text-white/50"
-        >
-          Welcome back, {session.user.name}
-        </motion.p>
-      )}
     </main>
   );
 }

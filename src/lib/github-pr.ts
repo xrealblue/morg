@@ -145,17 +145,14 @@ export async function getPullRequestDetail(
   const detail = await fetchPRFromGitHub(owner, repo, prNumber);
   await setCachedPR(fullName, prNumber, detail);
 
-  let summary: string | null = null;
-  try {
-    summary = await aiSummarize(
-      detail.files.map((f) => f.patch).filter(Boolean).join("\n"),
-    );
-    await setCachedPR(fullName, prNumber, detail, summary);
-  } catch (e) {
-    console.error("AI summary failed, cached without it:", e);
-  }
+  // Fire-and-forget AI summary — don't block the response
+  aiSummarize(
+    detail.files.map((f) => f.patch).filter(Boolean).join("\n"),
+  )
+    .then((summary) => setCachedPR(fullName, prNumber, detail, summary))
+    .catch((e) => console.error("AI summary failed, cached without it:", e));
 
-  return { ...detail, summary };
+  return { ...detail, summary: null };
 }
 
 export async function syncProjectPullRequests(projectId: string) {
@@ -176,8 +173,14 @@ export async function syncProjectPullRequests(projectId: string) {
     per_page: 20,
   });
 
-  for (const pr of prs) {
-    const detail = await fetchPRFromGitHub(owner, repo, pr.number);
-    await storePullRequest(projectId, detail);
+  const concurrency = 3;
+  for (let i = 0; i < prs.length; i += concurrency) {
+    const batch = prs.slice(i, i + concurrency);
+    await Promise.allSettled(
+      batch.map(async (pr) => {
+        const detail = await fetchPRFromGitHub(owner, repo, pr.number);
+        await storePullRequest(projectId, detail);
+      }),
+    );
   }
 }

@@ -56,6 +56,62 @@ export async function getCommits(
     }));
 }
 
+async function processCommit(
+  projectId: string,
+  owner: string,
+  repo: string,
+  commit: CommitData,
+  githubUrl: string,
+) {
+  try {
+    const detail = await fetchCommitFromGitHub(owner, repo, commit.commitHash);
+
+    const diff = await fetch(`${githubUrl}/commit/${commit.commitHash}.diff`, {
+      headers: { Accept: "application/vnd.github.v3.diff" },
+    });
+    const diffText = diff.ok ? await diff.text() : "";
+    const summary = (await aiSummarize(diffText)) ?? "No summary available";
+
+    await storeCommitDiff(projectId, commit.commitHash, {
+      ...detail,
+      commitMessage: commit.commitMessage,
+      commitAuthorName: commit.commitAuthorName,
+      commitAuthorAvatar: commit.commitAuthorAvatar,
+      commitDate: commit.commitDate,
+    });
+
+    const dbCommit = await db.commit.findFirst({
+      where: { projectId, commitHash: commit.commitHash },
+    });
+    if (dbCommit) {
+      await db.commit.update({
+        where: { id: dbCommit.id },
+        data: { summary },
+      });
+    }
+  } catch (err) {
+    console.error(`Failed to process commit ${commit.commitHash}:`, err);
+  }
+}
+
+async function processCommitBatch(
+  projectId: string,
+  owner: string,
+  repo: string,
+  commits: CommitData[],
+  githubUrl: string,
+  concurrency = 3,
+) {
+  for (let i = 0; i < commits.length; i += concurrency) {
+    const batch = commits.slice(i, i + concurrency);
+    await Promise.allSettled(
+      batch.map((commit) =>
+        processCommit(projectId, owner, repo, commit, githubUrl),
+      ),
+    );
+  }
+}
+
 export async function pollCommits(projectId: string, page = 1) {
   const project = await db.project.findUnique({
     where: { id: projectId },
@@ -72,37 +128,7 @@ export async function pollCommits(projectId: string, page = 1) {
 
   if (unprocessed.length === 0) return;
 
-  for (const commit of unprocessed) {
-    try {
-      const detail = await fetchCommitFromGitHub(owner, repo, commit.commitHash);
-
-      const diff = await fetch(`${project.githubUrl}/commit/${commit.commitHash}.diff`, {
-        headers: { Accept: "application/vnd.github.v3.diff" },
-      });
-      const diffText = diff.ok ? await diff.text() : "";
-      const summary = (await aiSummarize(diffText)) ?? "No summary available";
-
-      await storeCommitDiff(projectId, commit.commitHash, {
-        ...detail,
-        commitMessage: commit.commitMessage,
-        commitAuthorName: commit.commitAuthorName,
-        commitAuthorAvatar: commit.commitAuthorAvatar,
-        commitDate: commit.commitDate,
-      });
-
-      const dbCommit = await db.commit.findFirst({
-        where: { projectId, commitHash: commit.commitHash },
-      });
-      if (dbCommit) {
-        await db.commit.update({
-          where: { id: dbCommit.id },
-          data: { summary },
-        });
-      }
-    } catch (err) {
-      console.error(`Failed to process commit ${commit.commitHash}:`, err);
-    }
-  }
+  await processCommitBatch(projectId, owner, repo, unprocessed, project.githubUrl);
 }
 
 async function filterUnprocessedCommits(

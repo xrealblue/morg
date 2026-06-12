@@ -1,32 +1,5 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { db } from "~/server/db";
-
-const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
-
-const FALLBACK_MODELS = [
-  "gemini-3.5-flash",
-  "gemini-2.0-flash",
-  "gemini-1.5-flash",
-];
-
-async function generateWithFallback(prompt: string): Promise<string> {
-  let lastError: unknown;
-  for (const modelName of FALLBACK_MODELS) {
-    for (let attempt = 0; attempt < 3; attempt++) {
-      try {
-        const model = genai.getGenerativeModel({ model: modelName });
-        const response = await model.generateContent(prompt);
-        return response.response.text();
-      } catch (e) {
-        lastError = e;
-        if (attempt < 2) {
-          await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, attempt)));
-        }
-      }
-    }
-  }
-  throw lastError;
-}
+import { generateWithTimeout } from "./gemini";
 
 export async function summarizeFileDiff(
   fileName: string,
@@ -40,7 +13,7 @@ Diff:
 ${patch.slice(0, 3000)}`;
 
   try {
-    return await generateWithFallback(prompt);
+    return await generateWithTimeout(prompt);
   } catch {
     return "Failed to generate summary.";
   }
@@ -85,7 +58,7 @@ Changes:
 ${fileDiffs.slice(0, 5000)}`;
 
   try {
-    const summary = await generateWithFallback(prompt);
+    const summary = await generateWithTimeout(prompt);
 
     await db.pullRequest.update({
       where: { id: prId },
@@ -122,8 +95,7 @@ export async function summarizeCommitCache(
   if (!patches) return "No diff available.";
 
   try {
-    const { aiSummarize } = await import("./gemini");
-    const summary = await aiSummarize(patches);
+    const summary = await generateWithTimeout(patches);
     await setCachedCommit(fullName, sha, cached.data, summary);
     return summary;
   } catch {
@@ -151,7 +123,7 @@ Changes:
 ${patches.slice(0, 5000)}`;
 
   try {
-    const summary = await generateWithFallback(prompt);
+    const summary = await generateWithTimeout(prompt);
     await setCachedPR(fullName, prNumber, cached.data, summary);
     return summary;
   } catch {

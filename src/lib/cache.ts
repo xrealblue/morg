@@ -84,13 +84,29 @@ export async function setCachedRepo(fullName: string, data: unknown) {
   });
 }
 
+const LIST_PREFIX = "list:commits:";
+
 export async function getCachedCommitList(
   fullName: string,
 ): Promise<{ data: unknown } | null> {
-  const cacheKey = `list:commits:${fullName}`;
-  return null;
+  const cached = await db.commitCache.findUnique({
+    where: { fullName_sha: { fullName, sha: LIST_PREFIX } },
+  });
+  if (!cached) return null;
+  if (!isFresh(cached.cachedAt, TTL.COMMIT_LIST)) return null;
+  return { data: cached.data };
+}
+
+export async function setCachedCommitList(fullName: string, data: unknown) {
+  await db.commitCache.upsert({
+    where: { fullName_sha: { fullName, sha: LIST_PREFIX } },
+    create: { fullName, sha: LIST_PREFIX, data: data as object },
+    update: { data: data as object, cachedAt: new Date() },
+  });
 }
 
 export async function invalidateCommitList(fullName: string) {
-  return;
+  await db.commitCache.deleteMany({
+    where: { fullName, sha: LIST_PREFIX },
+  }).catch(() => {});
 }

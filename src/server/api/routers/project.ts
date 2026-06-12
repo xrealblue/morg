@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
   createTRPCRouter,
-  protectedProcedure,
+  publicProcedure,
 } from "~/server/api/trpc";
 import { pollCommits } from "~/lib/github";
 import { indexGithubRepo } from "~/lib/github-loader";
@@ -10,7 +10,7 @@ import { syncProjectPullRequests } from "~/lib/github-pr";
 import { generatePerFileSummary } from "~/lib/ai-summary";
 
 export const projectRouter = createTRPCRouter({
-  createProject: protectedProcedure
+  createProject: publicProcedure
     .input(
       z.object({
         name: z.string().min(1, "Project name is required"),
@@ -29,11 +29,6 @@ export const projectRouter = createTRPCRouter({
         data: {
           name: input.name,
           githubUrl: input.githubUrl,
-          userToProjects: {
-            create: {
-              userId: ctx.session.user.id,
-            },
-          },
         },
       });
 
@@ -47,19 +42,14 @@ export const projectRouter = createTRPCRouter({
       return project;
     }),
 
-  getProjects: protectedProcedure.query(async ({ ctx }) => {
+  getProjects: publicProcedure.query(async ({ ctx }) => {
     return ctx.db.project.findMany({
-      where: {
-        userToProjects: {
-          some: { userId: ctx.session.user.id },
-        },
-        deletedAt: null,
-      },
+      where: { deletedAt: null },
       orderBy: { createdAt: "desc" },
     });
   }),
 
-  getCommits: protectedProcedure
+  getCommits: publicProcedure
     .input(z.object({ projectId: z.string() }))
     .query(async ({ ctx, input }) => {
       void pollCommits(input.projectId).catch(console.error);
@@ -70,13 +60,13 @@ export const projectRouter = createTRPCRouter({
       });
     }),
 
-  getCommitDetail: protectedProcedure
+  getCommitDetail: publicProcedure
     .input(z.object({ commitId: z.string() }))
     .query(async ({ input }) => {
       return getCommitWithFiles(input.commitId);
     }),
 
-  loadMoreCommits: protectedProcedure
+  loadMoreCommits: publicProcedure
     .input(
       z.object({
         projectId: z.string(),
@@ -91,7 +81,7 @@ export const projectRouter = createTRPCRouter({
       });
     }),
 
-  getPullRequests: protectedProcedure
+  getPullRequests: publicProcedure
     .input(z.object({ projectId: z.string() }))
     .query(async ({ ctx, input }) => {
       return ctx.db.pullRequest.findMany({
@@ -100,7 +90,7 @@ export const projectRouter = createTRPCRouter({
       });
     }),
 
-  getPullRequestDetail: protectedProcedure
+  getPullRequestDetail: publicProcedure
     .input(z.object({ pullRequestId: z.string() }))
     .query(async ({ ctx, input }) => {
       return ctx.db.pullRequest.findUnique({
@@ -109,13 +99,13 @@ export const projectRouter = createTRPCRouter({
       });
     }),
 
-  syncPullRequests: protectedProcedure
+  syncPullRequests: publicProcedure
     .input(z.object({ projectId: z.string() }))
     .mutation(async ({ input }) => {
       await syncProjectPullRequests(input.projectId);
     }),
 
-  summarizeFile: protectedProcedure
+  summarizeFile: publicProcedure
     .input(z.object({ commitFileId: z.string() }))
     .mutation(async ({ input }) => {
       return generatePerFileSummary(input.commitFileId);

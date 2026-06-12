@@ -3,24 +3,28 @@ import type { Document } from "@langchain/core/documents";
 
 const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? "");
 
-const FALLBACK_MODELS = [
-  "gemini-3.5-flash",
+const MODELS = [
   "gemini-2.0-flash",
   "gemini-1.5-flash",
 ];
 
-async function generateWithFallback(prompt: string | string[]): Promise<string> {
+const TIMEOUT_MS = 15000;
+
+async function generateWithTimeout(prompt: string | string[]): Promise<string> {
   let lastError: unknown;
-  for (const modelName of FALLBACK_MODELS) {
-    for (let attempt = 0; attempt < 3; attempt++) {
+  for (const modelName of MODELS) {
+    for (let attempt = 0; attempt < 2; attempt++) {
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
         const model = genai.getGenerativeModel({ model: modelName });
-        const response = await model.generateContent(prompt);
-        return response.response.text();
+        const result = await model.generateContent(prompt);
+        clearTimeout(timeoutId);
+        return result.response.text();
       } catch (e) {
         lastError = e;
-        if (attempt < 2) {
-          await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, attempt)));
+        if (attempt < 1) {
+          await new Promise((r) => setTimeout(r, 1000));
         }
       }
     }
@@ -41,7 +45,7 @@ Keep it brief — most diffs need only 2-4 bullet points.
 Diff:
 ${diff}`;
 
-  return generateWithFallback(prompt);
+  return generateWithTimeout(prompt);
 }
 
 export async function summarizeCode(doc: Document): Promise<string> {
@@ -49,7 +53,7 @@ export async function summarizeCode(doc: Document): Promise<string> {
   const fileName = doc.metadata.source as string;
 
   try {
-    return await generateWithFallback([
+    return await generateWithTimeout([
       `You are a senior engineer onboarding a new developer.`,
       `Summarize the purpose of the file "${fileName}" in no more than 100 words.
 Code:
@@ -69,3 +73,5 @@ export async function generateEmbedding(text: string): Promise<number[]> {
   const response = await embeddingModel.embedContent(text);
   return response.embedding.values;
 }
+
+export { generateWithTimeout };

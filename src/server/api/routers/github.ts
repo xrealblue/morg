@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const githubRouter = createTRPCRouter({
-  getUserRepos: protectedProcedure
+  getUserRepos: publicProcedure
     .input(z.object({ username: z.string().min(1) }))
     .query(async ({ input }) => {
       const token = process.env.GITHUB_TOKEN;

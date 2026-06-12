@@ -60,17 +60,32 @@ export async function indexGithubRepo(
   );
 }
 
+async function processDoc(doc: Document) {
+  const summary = await summarizeCode(doc);
+  const embedding = await generateEmbedding(summary);
+  return {
+    summary,
+    embedding: `[${embedding.join(",")}]`,
+    sourceCode: doc.pageContent,
+    fileName: doc.metadata.source as string,
+  };
+}
+
 async function generateAllEmbeddings(docs: Document[]) {
-  return Promise.all(
-    docs.map(async (doc) => {
-      const summary = await summarizeCode(doc);
-      const embedding = await generateEmbedding(summary);
-      return {
-        summary,
-        embedding: `[${embedding.join(",")}]`,
-        sourceCode: doc.pageContent,
-        fileName: doc.metadata.source as string,
-      };
-    }),
-  );
+  const results: (Awaited<ReturnType<typeof processDoc>> | null)[] = [];
+  const concurrency = 5;
+
+  for (let i = 0; i < docs.length; i += concurrency) {
+    const batch = docs.slice(i, i + concurrency);
+    const batchResults = await Promise.allSettled(
+      batch.map((doc) => processDoc(doc)),
+    );
+    results.push(
+      ...batchResults.map((r) =>
+        r.status === "fulfilled" ? r.value : null,
+      ),
+    );
+  }
+
+  return results;
 }
