@@ -124,7 +124,7 @@ export async function summarizePRCache(
   const patches = extractPatches(data);
   if (!patches) return "No diff available.";
 
-  const prompt = `Summarize this pull request in 2-4 bullet points. Focus on the overall goal and key changes.
+  const prompt = `Summarize this pull request in 2-4 bullet points. Focus on the overall goal and key changes. For each file changed, state what was modified and why.
 
 Changes:
 ${patches.slice(0, 5000)}`;
