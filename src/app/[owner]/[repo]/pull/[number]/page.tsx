@@ -181,6 +181,8 @@ export default function PullRequestPage({ params }: Props) {
     );
   }
 
+  const p = pr as unknown as Record<string, unknown>;
+
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Left Sidebar — sticky to screen */}
@@ -189,44 +191,44 @@ export default function PullRequestPage({ params }: Props) {
           <div className="flex items-center gap-2 mb-1">
             <span
               className={`inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-medium ${
-                (d.state as string) === "open"
+                (p.state as string) === "open"
                   ? "bg-green-900/50 text-green-400"
-                  : (d.state as string) === "merged"
+                  : (p.state as string) === "merged"
                     ? "bg-purple-900/50 text-purple-400"
                     : "bg-red-900/50 text-red-400"
               }`}
             >
-              {(d.state as string) === "merged" ? "Merged" : (d.state as string)}
+              {(p.state as string) === "merged" ? "Merged" : (p.state as string)}
             </span>
             <span className="text-xs text-[var(--muted-foreground)]">#{number}</span>
           </div>
           <h1 className="truncate text-sm font-semibold text-[var(--foreground)]">
-            {d.title as string}
+            {p.title as string}
           </h1>
           <div className="mt-1 flex items-center gap-2 text-xs text-[var(--muted-foreground)]">
-            {(d.authorAvatar as string) && (
+            {(p.authorAvatar as string) && (
               <Image
-                src={d.authorAvatar as string}
-                alt={d.authorName as string}
+                src={p.authorAvatar as string}
+                alt={p.authorName as string}
                 width={16}
                 height={16}
                 className="rounded-full"
               />
             )}
-            <span className="font-medium text-[var(--foreground)]">{d.authorName as string}</span>
+            <span className="font-medium text-[var(--foreground)]">{p.authorName as string}</span>
             <span>into</span>
             <code className="bg-[var(--muted)] px-1.5 py-0.5 text-[11px] text-[var(--muted-foreground)]">
-              {d.baseBranch as string}
+              {p.baseBranch as string}
             </code>
             <span>from</span>
             <code className="bg-[var(--muted)] px-1.5 py-0.5 text-[11px] text-[var(--muted-foreground)]">
-              {d.headBranch as string}
+              {p.headBranch as string}
             </code>
           </div>
           <div className="mt-2 flex items-center gap-3 text-xs text-[var(--muted-foreground)]">
-            <span>{(d.changedFiles as number)} files</span>
-            <span className="text-[var(--diffshub-comment-add-fg)]">+{(d.additions as number)}</span>
-            <span className="text-[var(--diffshub-comment-del-fg)]">-{(d.deletions as number)}</span>
+            <span>{(p.changedFiles as number)} files</span>
+            <span className="text-[var(--diffshub-comment-add-fg)]">+{(p.additions as number)}</span>
+            <span className="text-[var(--diffshub-comment-del-fg)]">-{(p.deletions as number)}</span>
           </div>
         </div>
 

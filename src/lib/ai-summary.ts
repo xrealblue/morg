@@ -11,7 +11,12 @@ export async function summarizeFileDiff(
 ): Promise<string> {
   if (!patch || patch.length === 0) return "No changes in this file.";
 
-  const prompt = `You are a code reviewer. Summarize what changed in "${fileName}" in 1-2 sentences. Focus on the purpose of the change, not the mechanics.
+  const prompt = `You are a code reviewer. For the file "${fileName}", explain:
+1. What was the intent of the change
+2. What specific logic was added/removed/modified
+3. Any potential side effects
+
+1-2 sentences max.
 
 Diff:
 ${patch.slice(0, 3000)}`;
@@ -56,7 +61,7 @@ export async function summarizePullRequest(
     .map((f) => `File: ${f.fileName} (${f.status})\n${f.patch ?? ""}`)
     .join("\n\n");
 
-  const prompt = `Summarize this pull request "#${pr.prNumber}: ${pr.title}" in 2-4 bullet points. Focus on the overall goal and key changes.
+  const prompt = `Summarize this pull request "#${pr.prNumber}: ${pr.title}" in 2-4 bullet points. Focus on the overall goal and key changes. For each file changed, state what was modified and why.
 
 Changes:
 ${fileDiffs.slice(0, 5000)}`;
