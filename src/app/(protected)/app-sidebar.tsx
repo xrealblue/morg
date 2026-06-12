@@ -13,6 +13,7 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { MorgLogo } from "~/components/MorgLogo";
 import useProject from "~/hooks/use-project";
 
 const navItems = [
@@ -41,7 +42,10 @@ export default function AppSidebar() {
         <div className="mb-8 flex items-center justify-between">
           {!isCollapsed && (
             <Link href="/">
-              <h1 className="text-xl font-bold text-zinc-900" style={{ fontFamily: "var(--font-berkeley-mono)" }}>Morg</h1>
+              <h1 className="flex items-center gap-2 text-xl font-bold text-zinc-900" style={{ fontFamily: "var(--font-berkeley-mono)" }}>
+                <MorgLogo className="size-5" />
+                Morg
+              </h1>
             </Link>
           )}
           <button
