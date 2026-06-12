@@ -180,8 +180,8 @@ export default function CommitPage({ params }: Props) {
     );
   }
 
-  const d2 = d!;
-  const stats = (d2.stats ?? {}) as Record<string, number>;
+  const c = commit as unknown as Record<string, unknown>;
+  const stats = (c.stats ?? {}) as Record<string, number>;
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -189,21 +189,21 @@ export default function CommitPage({ params }: Props) {
       <div className="sticky top-0 flex h-screen w-80 shrink-0 flex-col border-r border-[var(--color-border)] bg-[var(--diffshub-sidebar-bg)]">
         <div className="border-b border-[var(--color-border)] px-4 py-3">
           <div className="flex items-center gap-2.5">
-            {(d2.commitAuthorAvatar as string) && (
+            {(c.commitAuthorAvatar as string) && (
               <img
-                src={d2.commitAuthorAvatar as string}
-                alt={d2.commitAuthorName as string}
+                src={c.commitAuthorAvatar as string}
+                alt={c.commitAuthorName as string}
                 className="h-7 w-7 rounded-full"
               />
             )}
             <div className="min-w-0 flex-1">
               <h1 className="truncate text-sm font-semibold text-[var(--foreground)]">
-                {d2.commitMessage as string}
+                {c.commitMessage as string}
               </h1>
             </div>
           </div>
           <div className="mt-2 flex items-center gap-3 text-xs text-[var(--muted-foreground)]">
-            <code className="font-mono text-[var(--muted-foreground)]">{(d2.commitHash as string)?.slice(0, 7)}</code>
+            <code className="font-mono text-[var(--muted-foreground)]">{(c.commitHash as string)?.slice(0, 7)}</code>
             <span className="text-[var(--diffshub-comment-add-fg)]">+{(stats.additions as number)}</span>
             <span className="text-[var(--diffshub-comment-del-fg)]">-{(stats.deletions as number)}</span>
             <span>{(stats.total as number) ?? files.length} files</span>
