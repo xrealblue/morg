@@ -5,6 +5,7 @@ import { api } from "~/trpc/react";
 import AISummaryCard from "~/components/diff/ai-summary-card";
 import FileTreeSidebar from "~/components/diff/file-tree-sidebar";
 import { ThemedCodeView } from "~/components/theming/react/ThemedCodeView";
+import { CodeViewHeader } from "~/components/CodeViewHeader";
 import { processPatch, type CodeViewDiffItem, type CodeViewItem } from "@pierre/diffs";
 import type { FileChange } from "~/components/diff/types";
 import { Sparkles, Loader2 } from "lucide-react";
@@ -227,6 +228,7 @@ export default function CommitPage({ params }: Props) {
 
       {/* Right Side — scrollable diff view */}
       <div ref={diffContainerRef} className="flex min-w-0 flex-1 flex-col overflow-y-auto bg-[var(--background)] diff-view-code">
+        <CodeViewHeader initialUrl={`https://github.com/${owner}/${repo}/commit/${sha}`} />
         {diffItems.length > 0 ? (
           <ThemedCodeView
             initialItems={diffItems}
