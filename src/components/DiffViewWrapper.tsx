@@ -1,32 +1,23 @@
 'use client';
 
-import type { CodeViewHandle, CodeViewItem } from '@pierre/diffs';
-import type { Ref } from 'react';
+import type { CodeViewItem } from '@pierre/diffs';
 import { useMemo } from 'react';
 
 import { CodeViewHeader } from '~/components/CodeViewHeader';
 import { ThemedCodeView } from '~/components/theming/react/ThemedCodeView';
 import { useDiffSettings } from '~/hooks/use-diff-settings';
-import type { DiffThemeInput } from '~/components/theming/js/diffThemeProps';
 
-interface DiffViewWrapperProps<LAnnotation = undefined> {
+interface DiffViewWrapperProps {
   initialUrl: string;
-  diffItems: CodeViewItem<LAnnotation>[];
-  renderHeaderMetadata?: (props: {
-    item: CodeViewItem<LAnnotation>;
-    index: number;
-  }) => React.ReactNode;
-  ref?: Ref<CodeViewHandle<LAnnotation>>;
-  theme?: DiffThemeInput;
+  diffItems: CodeViewItem[];
+  renderHeaderMetadata?: (item: CodeViewItem) => React.ReactNode;
 }
 
-export function DiffViewWrapper<LAnnotation = undefined>({
+export function DiffViewWrapper({
   initialUrl,
   diffItems,
   renderHeaderMetadata,
-  ref,
-  theme,
-}: DiffViewWrapperProps<LAnnotation>) {
+}: DiffViewWrapperProps) {
   const settings = useDiffSettings();
 
   const options = useMemo(
@@ -53,12 +44,10 @@ export function DiffViewWrapper<LAnnotation = undefined>({
   return (
     <>
       <CodeViewHeader initialUrl={initialUrl} />
-      <ThemedCodeView<LAnnotation>
-        ref={ref}
+      <ThemedCodeView
         initialItems={diffItems}
         options={options}
         renderHeaderMetadata={renderHeaderMetadata}
-        theme={theme}
       />
     </>
   );
